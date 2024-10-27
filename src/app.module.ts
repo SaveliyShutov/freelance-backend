@@ -16,6 +16,7 @@ import { OrdersSocketService } from './socket/orders.socket.service';
 import { MailModule } from './mail/mail.module';
 import { APP_GUARD } from '@nestjs/core'
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler'
+import { CourseModule } from './course/course.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler'
     S3Module,
     AppStateModule,
     MailModule,
+    CourseModule,
   ],
   controllers: [AppController],
   providers: [AppService, OrdersSocketService,
