@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { CourseService } from './course.service';
 
 // all aboout MongoDB
@@ -13,10 +13,17 @@ export class CourseController {
   constructor(
     @InjectModel('Course') private CourseModel: Model<CourseClass>,
     private readonly courseService: CourseService
-  ) {}
+  ) { }
 
   @Get('')
   async getAll() {
-    return this.CourseModel.find({})
+    return await this.CourseModel.find({})
+  }
+
+  @Get('/one-with-lessons')
+  async getCourseByIdWithLessons(
+    @Query('course_id') courseId: string
+  ) {
+    return await this.CourseModel.findById(courseId).populate('lessons')
   }
 }

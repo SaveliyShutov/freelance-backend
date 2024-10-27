@@ -4,10 +4,12 @@ import { CourseController } from './course.controller';
 
 // mongo models
 import CourseModel from './models/course.model';
+import LessonModel from './models/lesson.model';
 
 @Module({
   imports: [
-    CourseModel
+    CourseModel,
+    LessonModel,
   ],
   controllers: [CourseController],
   providers: [CourseService],
