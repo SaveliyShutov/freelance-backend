@@ -17,9 +17,17 @@ export class CourseController {
     private readonly courseService: CourseService
   ) { }
 
-  @Get('')
-  async getAll() {
-    return await this.CourseModel.find({})
+  @Post('')
+  async getAll(
+    @Body('courses') courses: any
+  ) {
+    // когда админ - получает все курсы
+    // когда обычный пользователь только свои курсы
+    if (courses?.length) {
+      return await this.CourseModel.find({ _id: { $in: courses } })
+    } else {
+      return await this.CourseModel.find({})
+    }
   }
 
   @Get('one-with-lessons')
