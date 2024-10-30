@@ -37,6 +37,12 @@ export class UserClass {
     required: false,
   })
   roles: string[];
+
+  @Prop({
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
+    default: [],
+  })
+  courses: mongoose.Schema.Types.ObjectId[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(UserClass);

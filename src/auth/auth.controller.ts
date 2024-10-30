@@ -245,4 +245,11 @@ export class AuthController {
 		let link = await this.AuthService.sendResetLink(email)
 		return link
 	}
+
+	@HttpCode(HttpStatus.OK)
+	@Get('get-all-users')
+	async getAllUsers(
+	) {
+		return await this.AuthService.getAllUsers()
+	}
 }

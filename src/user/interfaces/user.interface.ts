@@ -8,7 +8,5 @@ export interface User {
   email: string
   password: string
   roles: Role[]
-  rests: string[]
-  managingRest: string
-  orders: string[]
+  courses: string[]
 }

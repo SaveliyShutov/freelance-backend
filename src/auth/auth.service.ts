@@ -110,21 +110,21 @@ export class AuthService {
       user: user
     }
   }
-  
-  async validateEnterToResetPassword(user_id: any, token: string) {    
+
+  async validateEnterToResetPassword(user_id: any, token: string) {
     let candidate = await this.UserModel.findById(user_id)
-    
+
     if (!candidate._id) throw ApiError.BadRequest('Пользователь с таким _id не найден')
 
     let secret = process.env.JWT_RESET_SECRET + candidate.password
-    
+
     let result = this.TokenService.validateResetToken(token, secret)
-  
+
     if (!result) throw ApiError.AccessDenied()
 
     return result
   }
-  
+
   async resetPassword(password: string, token: string, userId: string) {
     try {
       await this.validateEnterToResetPassword(userId, token)
@@ -134,7 +134,7 @@ export class AuthService {
 
       const tokens = this.TokenService.generateTokens({ _id: user._id, password: user.password })
       await this.TokenService.saveToken(tokens.refreshToken)
-      
+
       return {
         ...tokens,
         user: user
@@ -155,7 +155,7 @@ export class AuthService {
     const link = process.env.CLIENT_URL + `/forgot-password?user_id=${candidate._id}&token=${token}`
 
     await this.mailService.sendResetLink(link, email)
-  
+
     return link
   }
 
@@ -168,5 +168,9 @@ export class AuthService {
       new: true,
       runValidators: true
     })
+  }
+
+  async getAllUsers() {
+    return await this.UserModel.find({})
   }
 }
