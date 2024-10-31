@@ -7,6 +7,7 @@ import { Model } from 'mongoose';
 
 import { CourseClass } from './schemas/course.schema';
 import { UserClass } from 'src/user/schemas/user.schema';
+import { LessonClass } from './schemas/lesson.schema';
 
 
 @Controller('courses')
@@ -14,6 +15,7 @@ export class CourseController {
   constructor(
     @InjectModel('Course') private CourseModel: Model<CourseClass>,
     @InjectModel('User') private UserModel: Model<UserClass>,
+    @InjectModel('Lesson') private LessonModel: Model<LessonClass>,
     private readonly courseService: CourseService
   ) { }
 
@@ -45,6 +47,18 @@ export class CourseController {
     let result = await this.CourseModel.findByIdAndUpdate(courseId, { $push: { students: userId } })
     if (result) {
       return await this.UserModel.findByIdAndUpdate(userId, { $push: { courses: courseId } })
+    }
+    return;
+  }
+
+  @Post('create-lesson')
+  async createLesson(
+    @Body('courseId') courseId: string,
+    @Body('lesson') lesson: any
+  ) {
+    let lessonFromDb = await this.LessonModel.create(lesson)
+    if (lessonFromDb._id) {
+      return await this.CourseModel.findByIdAndUpdate(courseId, { $push: { lessons: lessonFromDb._id } })
     }
     return;
   }
