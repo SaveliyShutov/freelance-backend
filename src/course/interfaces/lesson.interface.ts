@@ -6,4 +6,6 @@ export interface Lesson {
   shortDescription: string,
   videos: string[],
   homework: string,
+  links: string[],
+  course: mongoose.Types.ObjectId,
 }

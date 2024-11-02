@@ -17,6 +17,7 @@ import { MailModule } from './mail/mail.module';
 import { APP_GUARD } from '@nestjs/core'
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler'
 import { CourseModule } from './course/course.module';
+import { LessonModule } from './lesson/lesson.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { CourseModule } from './course/course.module';
     AppStateModule,
     MailModule,
     CourseModule,
+    LessonModule,
   ],
   controllers: [AppController],
   providers: [AppService, OrdersSocketService,

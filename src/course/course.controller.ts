@@ -56,6 +56,7 @@ export class CourseController {
     @Body('courseId') courseId: string,
     @Body('lesson') lesson: any
   ) {
+    lesson.course = courseId;
     let lessonFromDb = await this.LessonModel.create(lesson)
     if (lessonFromDb._id) {
       return await this.CourseModel.findByIdAndUpdate(courseId, { $push: { lessons: lessonFromDb._id } })
@@ -68,5 +69,17 @@ export class CourseController {
     @Body('course') course: any
   ) {
     return await this.CourseModel.create(course)
+  }
+
+  @Get('get-lessons-by-course')
+  async getLessonsByCourseId(
+    @Query('course_id') courseId: string
+  ) {
+    return await this.CourseModel.findById(courseId, { lessons: 1 }).populate({
+      path: 'lessons', populate: {
+        path: 'homework',
+        model: 'Homework',
+      }
+    })
   }
 }

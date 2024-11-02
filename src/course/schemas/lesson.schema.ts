@@ -21,9 +21,21 @@ export class LessonClass {
   shortDescription: string
 
   @Prop({
-    type: String,
+    type: [String]
   })
-  homework: string
+  links: string[]
+
+  @Prop({
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Homework' }],
+    default: [],
+  })
+  homework: mongoose.Schema.Types.ObjectId[];
+
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Course',
+  })
+  course: mongoose.Schema.Types.ObjectId
 }
 
 export const LessonSchema = SchemaFactory.createForClass(LessonClass)
