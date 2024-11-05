@@ -24,8 +24,8 @@ export class CourseController {
     @Body('courses') courses: any
   ) {
     // когда админ - получает все курсы
-    // когда обычный пользователь только свои курсы
-    if (courses?.length) {
+    // когда обычный пользователь только свои курсы    
+    if (courses instanceof Array) {
       return await this.CourseModel.find({ _id: { $in: courses } })
     } else {
       return await this.CourseModel.find({})
@@ -36,7 +36,7 @@ export class CourseController {
   async getCourseByIdWithLessons(
     @Query('course_id') courseId: string
   ) {
-    return await this.CourseModel.findById(courseId).populate('lessons')
+    return await this.CourseModel.findById(courseId).populate({ path: 'lessons', populate: { path: 'homework' } })
   }
 
   @Post('add-user-to-course')

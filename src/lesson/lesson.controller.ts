@@ -27,12 +27,12 @@ export class LessonController {
   async updateLesson(
     @Body('lesson') lesson: Lesson,
     @Body('newHomeworks') newHomeworks: any
-  ) {  
+  ) {
     // save new homeworks
     let hwIds = [];
     let homeworksFromDb = await this.HomeworkModel.insertMany(newHomeworks)
 
-    for (let hwFromDb of homeworksFromDb) {      
+    for (let hwFromDb of homeworksFromDb) {
       hwIds.push(hwFromDb._id)
     }
 
@@ -49,5 +49,12 @@ export class LessonController {
       return await lessonFromDb.save()
     }
     return;
+  }
+
+  @Post('homeworks-by-courses')
+  async getHomeworksByCourses(
+    @Body('courses') courses: string[]
+  ) {
+    return await this.HomeworkModel.find({ course: { $in: courses } })
   }
 }

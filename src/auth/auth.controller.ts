@@ -151,7 +151,7 @@ export class AuthController {
 		// проверить, валиден ещё accessToken
 		// если accessToken не валиден - сделать новый с помощью refreshToken
 		const userData = await this.AuthService.refresh(refreshToken, token)
-
+			
 		res.cookie(
 			'refreshToken',
 			refreshToken,
