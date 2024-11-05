@@ -6,11 +6,12 @@ import { join } from 'path';
 export class VideoService {
   // Your business logic around video processing can go here
   async handleFileUpload(file: Express.Multer.File) {
-    const filePath = join(__dirname, '..', '..', 'videos-lesson', file.originalname);
+    let customFilename = Date.now() + '_' + file.originalname;
+    const filePath = join(__dirname, '..', '..', 'public', 'lesson-videos', customFilename);
     await writeFile(filePath, file.buffer);
     return {
       message: 'Video uploaded successfully!',
-      filename: file.originalname,
+      filename: customFilename
     };
   }
 }

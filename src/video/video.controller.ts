@@ -33,6 +33,6 @@ export class VideoController {
     @Query('lesson_id') lessonId: string,
   ) {
     let result = await this.videoService.handleFileUpload(file);
-    return await this.LessonModel.findByIdAndUpdate(lessonId, { $push: { videos: String(result.filename) } })
+    return await this.LessonModel.findByIdAndUpdate(lessonId, { $push: { videos: process.env.API_URL + '/static/lesson-videos/' + String(result.filename) } })
   }
 }

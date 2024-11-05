@@ -20,8 +20,18 @@ import { CourseModule } from './course/course.module';
 import { LessonModule } from './lesson/lesson.module';
 import { VideoModule } from './video/video.module';
 
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+console.log(join(__dirname, '..', 'public'));
+
 @Module({
   imports: [
+    ServeStaticModule.forRoot(
+      {
+        rootPath: join(__dirname, '..', 'public'),
+        serveRoot: '/static/', // This is the route you will use to access your files 
+      }
+    ),
     ThrottlerModule.forRoot([{
       ttl: 1000,
       limit: 20,
