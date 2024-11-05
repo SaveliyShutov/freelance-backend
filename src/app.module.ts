@@ -12,7 +12,6 @@ import { UserModule } from './user/user.module';
 import { RolesModule } from './roles/roles.module';
 import { S3Module } from './s3/s3.module';
 import { AppStateModule } from './app-state/app-state.module';
-import { OrdersSocketService } from './socket/orders.socket.service';
 import { MailModule } from './mail/mail.module';
 import { APP_GUARD } from '@nestjs/core'
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler'
@@ -22,6 +21,7 @@ import { VideoModule } from './video/video.module';
 
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { SolutionModule } from './solution/solution.module';
 console.log(join(__dirname, '..', 'public'));
 
 @Module({
@@ -56,9 +56,10 @@ console.log(join(__dirname, '..', 'public'));
     CourseModule,
     LessonModule,
     VideoModule,
+    SolutionModule,
   ],
   controllers: [AppController],
-  providers: [AppService, OrdersSocketService,
+  providers: [AppService,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard
