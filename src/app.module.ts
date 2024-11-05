@@ -18,6 +18,7 @@ import { APP_GUARD } from '@nestjs/core'
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler'
 import { CourseModule } from './course/course.module';
 import { LessonModule } from './lesson/lesson.module';
+import { VideoModule } from './video/video.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { LessonModule } from './lesson/lesson.module';
     MailModule,
     CourseModule,
     LessonModule,
+    VideoModule,
   ],
   controllers: [AppController],
   providers: [AppService, OrdersSocketService,

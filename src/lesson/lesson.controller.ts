@@ -6,7 +6,6 @@ import { LessonService } from './lesson.service';
 import { Lesson } from 'src/course/interfaces/lesson.interface';
 
 // all about MongoDB
-import { ObjectId } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
