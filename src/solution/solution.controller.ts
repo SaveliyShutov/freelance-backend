@@ -24,43 +24,58 @@ export class SolutionController {
 
   @Post('upload/folder')
   @UseInterceptors(FilesInterceptor('files', 100)) // 'files' is the form field name, max 100 files
-  uploadFolder(@UploadedFiles() files: Express.Multer.File[]) {
-    const fileNames = files.map(file => file.filename);
-    // console.log(files);
-    
-    return {
-      message: 'Files uploaded successfully',
-      files: fileNames,
-    };
+  async uploadFolder(
+    @UploadedFiles() files: Express.Multer.File[],
+    @Query('solution_id') solutionId: string
+  ) {
+    const fileNames = files.map(file => {
+      let spl = file.destination.split('/');
+      spl.splice(0, 1)
+      return spl.join('/')
+    });
+
+    // there is one folder
+    return await this.SolutionModel.findByIdAndUpdate(solutionId, { folderPath: fileNames[0] })
   }
 
   @Post('upload/archives')
   @UseInterceptors(FilesInterceptor('files', 10)) // 'files' is the form field name, max 10 files
-  uploadArchives(@UploadedFiles() files: Express.Multer.File[]) {
-    const fileNames = files.map(file => file.filename);
-    return {
-      message: 'Files uploaded successfully',
-      files: fileNames,
-    };
+  async uploadArchives(
+    @UploadedFiles() files: Express.Multer.File[],
+    @Query('solution_id') solutionId: string) {
+    const fileNames = files.map(file => {
+      let spl = file.path.split('/');
+      spl.splice(0, 1) // path is public/solutions/..., we dont need public in out path
+      return spl.join('/')
+    });
+
+    return await this.SolutionModel.findByIdAndUpdate(solutionId, { archives: fileNames })
   }
 
   @Post('upload/any-files')
   @UseInterceptors(FilesInterceptor('files', 40)) // 'files' is the form field name, max 40 files
-  uploadAnyFiles(@UploadedFiles() files: Express.Multer.File[]) {
-    const fileNames = files.map(file => file.filename);
-    return {
-      message: 'Files uploaded successfully',
-      files: fileNames,
-    };
+  async uploadAnyFiles(
+    @UploadedFiles() files: Express.Multer.File[],
+    @Query('solution_id') solutionId: string) {
+    const fileNames = files.map(file => {
+      let spl = file.path.split('/');
+      spl.splice(0, 1) // path is public/solutions/..., we dont need public in out path
+      return spl.join('/')
+    });
+
+    return await this.SolutionModel.findByIdAndUpdate(solutionId, { anyFiles: fileNames })
   }
 
   @Post('upload/code')
-  @UseInterceptors(FilesInterceptor('files', 40)) // 'code' is the form field name, max 40 files
-  uploadCode(@UploadedFiles() files: Express.Multer.File[]) {    
-    const fileNames = files.map(file => file.filename);
-    return {
-      message: 'Files uploaded successfully',
-      files: fileNames,
-    };
+  @UseInterceptors(FilesInterceptor('files', 40)) // 'files' is the form field name, max 40 files
+  async uploadCode(
+    @UploadedFiles() files: Express.Multer.File[],
+    @Query('solution_id') solutionId: string) {
+    const fileNames = files.map(file => {
+      let spl = file.path.split('/');
+      spl.splice(0, 1) // path is public/solutions/..., we dont need public in out path
+      return spl.join('/')
+    });
+    return await this.SolutionModel.findByIdAndUpdate(solutionId, { code: fileNames })
   }
 }

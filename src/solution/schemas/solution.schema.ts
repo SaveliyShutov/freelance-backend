@@ -32,6 +32,26 @@ export class SolutionClass {
     ref: 'Lesson',
   })
   lesson: mongoose.Schema.Types.ObjectId
+
+  @Prop({
+    type: String
+  })
+  folderPath: string
+
+  @Prop({
+    type: [String]
+  })
+  archives: string[]
+
+  @Prop({
+    type: [String]
+  })
+  anyFiles: string[]
+
+  @Prop({
+    type: [String]
+  })
+  code: string[]
 }
 
 export const SolutionSchema = SchemaFactory.createForClass(SolutionClass)
