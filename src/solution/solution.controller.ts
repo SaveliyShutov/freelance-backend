@@ -17,9 +17,19 @@ export class SolutionController {
 
   @Post('')
   async newSolution(
-    @Body('solution') solution: any
-  ) {
+    @Body('') solution: any
+  ) {    
     return await this.SolutionModel.create(solution)
+  }
+
+  @Get('')
+  async getAll() {
+    return await this.SolutionModel.find({}).populate({
+      path: 'course',
+      select: {
+        name: 1,
+      }
+    })
   }
 
   @Post('upload/folder')

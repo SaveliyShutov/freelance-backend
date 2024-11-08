@@ -3,6 +3,13 @@ import mongoose, { HydratedDocument } from 'mongoose';
 
 export type SolutionDocument = HydratedDocument<SolutionClass>
 
+
+enum STATUSES {
+  'not_checked',
+  'checked',
+  'declined'
+}
+
 @Schema()
 export class SolutionClass {
   @Prop({
@@ -14,6 +21,29 @@ export class SolutionClass {
     type: String
   })
   links: string
+
+  @Prop({
+    type: String
+  })
+  date: string
+
+  @Prop({
+    type: String,
+    enum: STATUSES,
+    default: 'not_checked'
+  })
+  status: string
+
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  })
+  student: mongoose.Schema.Types.ObjectId
+
+  @Prop({
+    type: String,
+  })
+  studentName: string
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
