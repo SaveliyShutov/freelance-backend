@@ -17,19 +17,40 @@ export class SolutionController {
 
   @Post('')
   async newSolution(
-    @Body('') solution: any
-  ) {    
+    @Body('solution') solution: any
+  ) {
     return await this.SolutionModel.create(solution)
   }
 
   @Get('')
   async getAll() {
     return await this.SolutionModel.find({}).populate({
-      path: 'course',
+      path: 'lesson',
       select: {
         name: 1,
       }
     })
+  }
+  @Get('get-by-id')
+  async getById(
+    @Query('_id') solutionId: string
+  ) {
+    return await this.SolutionModel.findById(solutionId).populate({
+      path: 'lesson',
+      select: {
+        name: 1,
+      }
+    })
+  }
+
+  // status, teacherComment, solutionId 
+  @Post('set-teacher-response')
+  async setTeacherResponse(
+    @Body('status') status: string,
+    @Body('teacherComment') teacherComment: string,
+    @Body('solutionId') solutionId: string,
+  ) {
+    return await this.SolutionModel.findByIdAndUpdate(solutionId, { teacherComment: teacherComment, status: status })
   }
 
   @Post('upload/folder')
@@ -45,7 +66,7 @@ export class SolutionController {
     });
 
     // there is one folder
-    return await this.SolutionModel.findByIdAndUpdate(solutionId, { folderPath: fileNames[0] })
+    return await this.SolutionModel.findByIdAndUpdate(solutionId, { folderPath: fileNames[0], folderPaths: fileNames })
   }
 
   @Post('upload/archives')

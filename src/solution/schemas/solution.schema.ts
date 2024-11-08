@@ -69,6 +69,16 @@ export class SolutionClass {
   folderPath: string
 
   @Prop({
+    type: String
+  })
+  teacherComment: string
+
+  @Prop({
+    type: [String]
+  })
+  folderPaths: string[]
+
+  @Prop({
     type: [String]
   })
   archives: string[]
