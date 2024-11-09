@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { CourseService } from './course.service';
 
 // all aboout MongoDB
@@ -9,6 +10,8 @@ import { CourseClass } from './schemas/course.schema';
 import { UserClass } from 'src/user/schemas/user.schema';
 import { LessonClass } from './schemas/lesson.schema';
 
+import YaCloud from 'src/s3/bucket';
+const sharp = require('sharp');
 
 @Controller('courses')
 export class CourseController {
@@ -49,6 +52,33 @@ export class CourseController {
       return await this.UserModel.findByIdAndUpdate(userId, { $push: { courses: courseId } })
     }
     return;
+  }
+
+  @Post('images')
+  @UseInterceptors(AnyFilesInterceptor())
+  async uploadFile(
+    @UploadedFiles() files: Array<Express.Multer.File>,
+    @Query('course_id') course_id: String,
+  ) {
+    let filenames = [];
+
+    for (let file of files) {
+      if (file.originalname.startsWith('logo')) {
+        file.buffer = await sharp(file.buffer).resize(300, 300).toBuffer()
+      }
+      let uploadResult = await YaCloud.Upload({
+        file,
+        path: 'courses',
+        fileName: file.originalname,
+      });
+      filenames.push(uploadResult.Location);
+    }
+    let setObj = {};
+    if (filenames[0]) setObj['images.logo'] = filenames[0];
+
+    return await this.CourseModel.findByIdAndUpdate(course_id, {
+      $set: setObj,
+    });
   }
 
   @Post('create-lesson')

@@ -6,10 +6,11 @@ export type CourseDocument = HydratedDocument<CourseClass>
 @Schema()
 export class CourseClass {
   @Prop({
-    type: [String]
+    type: Array,
+    required: false,
   })
-  images: string[]
-  
+  images: Object;
+
   @Prop({
     type: String,
   })
