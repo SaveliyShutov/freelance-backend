@@ -7,7 +7,7 @@ export class VideoService {
   // Your business logic around video processing can go here
   async handleFileUpload(file: Express.Multer.File) {
     let customFilename = Date.now() + '_' + file.originalname;
-    const filePath = join(__dirname, '..', '..', 'public', 'solution-folders', customFilename);
+    const filePath = join(__dirname, '..', '..', 'public', 'lesson-videos', customFilename);
     await writeFile(filePath, file.buffer);
     return {
       message: 'Folder uploaded successfully!',
