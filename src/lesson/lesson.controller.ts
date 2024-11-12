@@ -13,7 +13,7 @@ import { LessonClass } from 'src/course/schemas/lesson.schema';
 import { HomeworkClass } from './schemas/homework.schema';
 
 import YaCloud from 'src/s3/bucket';
-const sharp = require('sharp');
+import sharp from "sharp";
 
 @Controller('lesson')
 export class LessonController {
