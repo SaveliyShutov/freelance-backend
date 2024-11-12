@@ -44,7 +44,7 @@ export class LessonController {
     }
     let setObj = {};
     if (filenames[0]) { setObj['images.logo'] = filenames[0]; }
-    console.log(lesson_id)
+
     return await this.LessonModel.findByIdAndUpdate(lesson_id, {
       $set: setObj,
     });

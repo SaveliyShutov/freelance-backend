@@ -22,7 +22,6 @@ import { VideoModule } from './video/video.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { SolutionModule } from './solution/solution.module';
-console.log(join(__dirname, '..', 'public'));
 
 @Module({
   imports: [
