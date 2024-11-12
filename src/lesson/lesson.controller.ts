@@ -1,5 +1,5 @@
-
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { LessonService } from './lesson.service';
 
 // types
@@ -12,7 +12,8 @@ import { Model } from 'mongoose';
 import { LessonClass } from 'src/course/schemas/lesson.schema';
 import { HomeworkClass } from './schemas/homework.schema';
 
-
+import YaCloud from 'src/s3/bucket';
+const sharp = require('sharp');
 
 @Controller('lesson')
 export class LessonController {
@@ -21,6 +22,33 @@ export class LessonController {
     @InjectModel('Homework') private HomeworkModel: Model<HomeworkClass>,
     private readonly lessonService: LessonService
   ) { }
+
+  @Post('images')
+  @UseInterceptors(AnyFilesInterceptor())
+  async uploadFile(
+    @UploadedFiles() files: Array<Express.Multer.File>,
+    @Query('lesson_id') lesson_id: String,
+  ) {
+    let filenames = [];
+
+    for (let file of files) {
+      if (file.originalname.startsWith('logo')) {
+        file.buffer = await sharp(file.buffer).resize(300, 300).toBuffer()
+      }
+      let uploadResult = await YaCloud.Upload({
+        file,
+        path: 'lessons',
+        fileName: file.originalname,
+      });
+      filenames.push(uploadResult.Location);
+    }
+    let setObj = {};
+    if (filenames[0]) { setObj['images.logo'] = filenames[0]; }
+    console.log(lesson_id)
+    return await this.LessonModel.findByIdAndUpdate(lesson_id, {
+      $set: setObj,
+    });
+  }
 
   @Post('update')
   async updateLesson(

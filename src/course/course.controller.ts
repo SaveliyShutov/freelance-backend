@@ -74,7 +74,7 @@ export class CourseController {
       filenames.push(uploadResult.Location);
     }
     let setObj = {};
-    if (filenames[0]) setObj['images.logo'] = filenames[0];
+    if (filenames[0]) { setObj['images.logo'] = filenames[0] };
 
     return await this.CourseModel.findByIdAndUpdate(course_id, {
       $set: setObj,

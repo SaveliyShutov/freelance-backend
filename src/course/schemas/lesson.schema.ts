@@ -9,6 +9,13 @@ export class LessonClass {
     type: [String]
   })
   videos: string[]
+
+  @Prop({
+    type: Array,
+    required: false,
+  })
+  images: Object;
+
   
   @Prop({
     type: String,
