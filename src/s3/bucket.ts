@@ -41,6 +41,40 @@ class YandexCloud {
       console.error(e);
     }
   }
+
+  public async generatePresignedUrl(objectKey: string) {
+    try {
+      const params = {
+        Bucket: process.env.YC_BUCKET_NAME,
+        Key: objectKey,
+        Expires: 60 * 5, // URL expiration time in seconds
+        ContentType: 'application/octet-stream', // Set the content type
+      };
+      const url = await this.aws.getSignedUrlPromise('putObject', params);
+      return url;
+    } catch (error) {
+      console.error('Error generating pre-signed URL', error);
+      throw error;
+    }
+  }
+  public async uploadVideo(fileBuffer: Buffer, presignedUrl: string) {
+    const response = await fetch(presignedUrl, {
+      method: 'PUT',
+      body: fileBuffer,
+      headers: {
+        'Content-Type': 'application/octet-stream',
+        // Optionally set other headers
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Upload failed: ${response.statusText}`);
+    }
+
+    console.log('File uploaded successfully!', response);
+    return response
+  }
+
 }
 
 const YaCloud = new YandexCloud();
