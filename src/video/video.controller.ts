@@ -9,15 +9,13 @@ import {
   Res,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { join } from 'path';
-import { createWriteStream } from 'fs';
 import { VideoService } from './video.service';
 import { Throttle } from '@nestjs/throttler';
 
 import { Response } from 'express';
 
 import * as fs from 'node:fs';
-import { createReadStream, statSync } from 'fs';
+import { join } from 'path';
 
 import YaCloud from 'src/s3/bucket';
 
@@ -26,7 +24,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { LessonClass } from 'src/course/schemas/lesson.schema';
 
-@Throttle({ default: { limit: 100, ttl: 200000 } })
+@Throttle({ default: { limit: 100, ttl: 200000, blockDuration: 5 * 60000 } })
 @Controller('video')
 export class VideoController {
   constructor(private readonly videoService: VideoService,
@@ -51,7 +49,7 @@ export class VideoController {
     fs.mkdirSync(uploadDir, { recursive: true })
 
     // Write the chunk to the file
-    const writeStream = createWriteStream(filePath, { flags: 'a' });
+    const writeStream = fs.createWriteStream(filePath, { flags: 'a' });
     writeStream.write(file.buffer);
     writeStream.end();
 
@@ -74,6 +72,12 @@ export class VideoController {
       //     return await this.LessonModel.findByIdAndUpdate(lessonId, { $push: { videos: process.env.API_URL + '/static/lesson-videos/' + String(filename) } })
       //   })
       // }, 1000);
+
+      let hlsResult = await this.videoService.createHLS(filePath, lessonId)
+      if (hlsResult.status == 'error') {
+        return hlsResult
+      }
+
       return await this.LessonModel.findByIdAndUpdate(lessonId, { $push: { videos: process.env.API_URL + '/static/lesson-videos/' + String(filename) } })
     }
 
