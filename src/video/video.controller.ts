@@ -41,6 +41,7 @@ export class VideoController {
     @Body('chunkIndex') chunkIndex: number,
     @Body('totalChunks') totalChunks: number
   ) {
+    return
     const filePath = join(__dirname, '..', '..', 'public', 'lesson-videos', filename);
     const uploadDir = join(__dirname, '..', '..', 'public', 'lesson-videos');
 

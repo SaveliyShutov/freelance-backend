@@ -10,6 +10,7 @@ import * as fs from "node:fs";
 export class VideoService {
   // Your business logic around video processing can go here
   async handleFileUpload(file: Express.Multer.File) {
+    return
     let customFilename = Date.now() + '_' + file.originalname;
     const filePath = join(__dirname, '..', '..', 'public', 'lesson-videos', customFilename);
     await writeFile(filePath, file.buffer);
@@ -19,6 +20,7 @@ export class VideoService {
     };
   }
   async createHLS(videoFilePath: string, lessonId: string) {
+    return
     const outputDir = `public/lesson-videos/playlists/lesson-${lessonId}`; // Directory to output HLS files
     const segmentLength = '30'; // Length of each HLS segment in seconds
 

@@ -69,6 +69,7 @@ export class LessonController {
       lessonFromDb.name = lesson.name;
       lessonFromDb.shortDescription = lesson.shortDescription;
       lessonFromDb.links = lesson.links;
+      lessonFromDb.videos = lesson.videos;
 
       lessonFromDb.homework.push(...hwIds)
       lessonFromDb.markModified('homework')
