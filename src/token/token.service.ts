@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common'
-import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import * as jwt from 'jsonwebtoken'
 import { Model } from 'mongoose';
@@ -11,7 +10,6 @@ import { TokenClass } from './schemas/token.schema';
 export class TokenService {
 	constructor(
 		@InjectModel('Token') private TokenModel: Model<TokenClass>,
-		private jwtService: JwtService
 	) { }
 
 	validateResetToken(token: string, secret: string): any {

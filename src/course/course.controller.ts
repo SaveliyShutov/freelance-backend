@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { CourseService } from './course.service';
 
@@ -13,6 +13,9 @@ import { LessonClass } from './schemas/lesson.schema';
 import YaCloud from 'src/s3/bucket';
 const sharp = require('sharp');
 
+import { AdminAuthGuard } from 'src/auth/admin.guard';
+import { TeacherAuthGuard } from 'src/auth/teacher.guard';
+
 @Controller('courses')
 export class CourseController {
   constructor(
@@ -22,17 +25,33 @@ export class CourseController {
     private readonly courseService: CourseService
   ) { }
 
-  @Post('')
-  async getAll(
+
+  @Post('student/get-all')
+  async userGetAll(
     @Body('courses') courses: any
   ) {
     // когда админ - получает все курсы
     // когда обычный пользователь только свои курсы    
-    if (courses instanceof Array) {
-      return await this.CourseModel.find({ _id: { $in: courses } })
-    } else {
-      return await this.CourseModel.find({})
-    }
+    return await this.CourseModel.find({ _id: { $in: courses } })
+  }
+
+  @UseGuards(TeacherAuthGuard)
+  @Post('teacher/get-all')
+  async teacherGetAll(
+  ) {
+    // когда админ - получает все курсы
+    // когда обычный пользователь только свои курсы    
+    // return await this.CourseModel.find({ _id: { $in: courses } })
+    return await this.CourseModel.find({})
+  }
+
+  @UseGuards(AdminAuthGuard)
+  @Post('admin/get-all')
+  async adminGetAll(
+  ) {
+    // когда админ - получает все курсы
+    // когда обычный пользователь только свои курсы    
+    return await this.CourseModel.find({})
   }
 
   @Get('one-with-lessons')
