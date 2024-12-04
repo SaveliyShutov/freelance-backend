@@ -1,31 +1,31 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { Request } from 'express';
 import ApiError from 'src/exceptions/errors/api-error';
+import { TokenService } from 'src/token/token.service';
+import * as cookie from 'cookie';
+
+// mongodb
+import { InjectModel } from '@nestjs/mongoose'
+import { Model } from 'mongoose'
+import { UserClass } from 'src/user/schemas/user.schema';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private jwtService: JwtService) {}
+  constructor(
+    private readonly tokenService: TokenService,
+    @InjectModel('User') private UserModel: Model<UserClass>,
+  ) { }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest()
-    
-    const token = this.extractTokenFromHeader(request)
-    if (!token) 
-      throw ApiError.UnauthorizedError()
+    const cookies = cookie.parse(request.headers.cookie || '');
+    const accessToken = cookies.token;
 
-    try {
-      const payload = await this.jwtService.verifyAsync(token, { secret: process.env.JWT_ACCESS_SECRET })
+    if (!accessToken) throw ApiError.UnauthorizedError()
+    let userData = this.tokenService.validateAccessToken(accessToken);
 
-      request.user = payload
-    } catch {
-      throw ApiError.UnauthorizedError()
+    if (userData?._id) {
+      return true
     }
-    return true
-  }
-
-  private extractTokenFromHeader(request: Request): string | undefined {
-    const [type, token] = request.headers.authorization?.split(' ') ?? []
-    return type === 'Bearer' ? token : undefined
+    throw ApiError.UnauthorizedError();
   }
 }

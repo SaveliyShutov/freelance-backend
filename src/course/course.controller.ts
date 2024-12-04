@@ -15,6 +15,8 @@ const sharp = require('sharp');
 
 import { AdminAuthGuard } from 'src/auth/admin.guard';
 import { TeacherAuthGuard } from 'src/auth/teacher.guard';
+import { AuthGuard } from 'src/auth/auth.guard';
+
 
 @Controller('courses')
 export class CourseController {
@@ -25,7 +27,7 @@ export class CourseController {
     private readonly courseService: CourseService
   ) { }
 
-
+  @UseGuards(AuthGuard)
   @Post('student/get-all')
   async userGetAll(
     @Body('courses') courses: any

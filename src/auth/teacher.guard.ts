@@ -7,6 +7,8 @@ import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { UserClass } from 'src/user/schemas/user.schema';
 
+import ApiError from 'src/exceptions/errors/api-error';
+
 @Injectable()
 export class TeacherAuthGuard implements CanActivate {
   constructor(
@@ -20,7 +22,9 @@ export class TeacherAuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const cookies = cookie.parse(request.headers.cookie || '');
     const accessToken = cookies.token;
-    if (!accessToken) return false;
+    if (!accessToken) {
+      throw ApiError.AccessDenied()
+    }
 
     // с помощью access token'а получаем _id пользователя 
     let userData = this.tokenService.validateAccessToken(accessToken);    
@@ -29,6 +33,6 @@ export class TeacherAuthGuard implements CanActivate {
       // если роль нашлась, то пускаем пользователя
       if (user.roles.indexOf('teacher') != -1) return true
     }
-    return false;
+    throw ApiError.AccessDenied()
   }
 }
