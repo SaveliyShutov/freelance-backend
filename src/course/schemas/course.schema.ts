@@ -32,6 +32,11 @@ export class CourseClass {
     default: [],
   })
   students: mongoose.Schema.Types.ObjectId[];
+
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId, ref: 'User',
+  })
+  teacher: mongoose.Schema.Types.ObjectId;
 }
 
 export const CourseSchema = SchemaFactory.createForClass(CourseClass)

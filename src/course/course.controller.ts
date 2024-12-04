@@ -116,7 +116,7 @@ export class CourseController {
   @Post('create')
   async createCourse(
     @Body('course') course: any
-  ) {
+  ) {    
     return await this.CourseModel.create(course)
   }
 
