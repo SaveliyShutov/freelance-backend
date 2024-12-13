@@ -57,6 +57,15 @@ export class CourseController {
   }
 
   @UseGuards(AdminAuthGuard)
+  @Post('admin/update')
+  async updateCourseAdmin(
+    @Body('course') newCourse: any,
+    @Body('courseId') courseId: string
+  ) {
+    return await this.CourseModel.findByIdAndUpdate(courseId, newCourse)
+  }
+
+  @UseGuards(AdminAuthGuard)
   @Post('admin/get-all')
   async adminGetAll(
   ) {
