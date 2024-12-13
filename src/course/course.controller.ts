@@ -136,7 +136,7 @@ export class CourseController {
   @Post('create')
   async createCourse(
     @Body('course') course: any
-  ) {    
+  ) {
     return await this.CourseModel.create(course)
   }
 
@@ -148,6 +148,18 @@ export class CourseController {
       path: 'lessons', populate: {
         path: 'homework',
         model: 'Homework',
+      }
+    })
+  }
+
+  @Post('student/get-my-lessons-by-courses')
+  async getUserLessonsGroupedByCourse(@Body('userCourses') userCourses: string[]) {    
+    return await this.CourseModel.find({ _id: { $in: userCourses } }).populate({
+      path: 'lessons',
+      select: {
+        images: 1,
+        name: 1,
+        shortDescription: 1,
       }
     })
   }
