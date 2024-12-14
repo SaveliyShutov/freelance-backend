@@ -153,14 +153,24 @@ export class CourseController {
   }
 
   @Post('student/get-my-lessons-by-courses')
-  async getUserLessonsGroupedByCourse(@Body('userCourses') userCourses: string[]) {    
-    return await this.CourseModel.find({ _id: { $in: userCourses } }).populate({
-      path: 'lessons',
-      select: {
-        images: 1,
-        name: 1,
-        shortDescription: 1,
-      }
-    })
+  async getUserLessonsGroupedByCourse(@Body('userCourses') userCourses: string[]) {
+    return await this.CourseModel.find({ _id: { $in: userCourses } })
+      .populate({
+        path: 'lessons',
+        select: {
+          images: 1,
+          name: 1,
+          shortDescription: 1,
+          course: 1,
+        },
+      })
+      .populate({
+        path: 'teacher',
+        select: {
+          name: 1,
+          surname: 1,
+          roles: 1
+        }
+      })
   }
 }
