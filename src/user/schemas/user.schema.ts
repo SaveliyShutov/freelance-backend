@@ -39,6 +39,13 @@ export class UserClass {
   roles: string[];
 
   @Prop({
+    type: Array,
+    default: [],
+    required: false
+  })
+  avatars: string[];
+
+  @Prop({
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
     default: [],
   })

@@ -1,4 +1,5 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common'
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res, UseGuards, UploadedFiles, UseInterceptors, Query } from '@nestjs/common'
+import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { Request, Response } from 'express';
 import RequestWithUser from 'src/types/request-with-user.type';
 import { UserFromClient } from 'src/user/interfaces/user-from-client.interface';
@@ -8,20 +9,30 @@ import { AuthService } from './auth.service';
 import { MailService } from 'src/mail/mail.service';
 import { Throttle } from '@nestjs/throttler';
 
+
+import YaCloud from 'src/s3/bucket';
+import * as sharp from "sharp";
+
+// all about MongoDB
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { UserClass } from 'src/user/schemas/user.schema';
+
 @Controller('auth')
 export class AuthController {
 	constructor(
 		private AuthService: AuthService,
-		private mailService: MailService
+		private mailService: MailService,
+		@InjectModel('User') private UserModel: Model<UserClass>,
 	) { }
 
 	@Throttle({
-    default: {
-      ttl: 60000,
-      limit: 4,
-      blockDuration: 5 * 60000
-    }
-  })
+		default: {
+			ttl: 60000,
+			limit: 4,
+			blockDuration: 5 * 60000
+		}
+	})
 	@HttpCode(HttpStatus.CREATED)
 	@Post('registration')
 	async registration(
@@ -62,16 +73,16 @@ export class AuthController {
 				domain: process.env?.DOMAIN ?? ''
 			}
 		)
-		.json(userData)
+			.json(userData)
 	}
 
 	@Throttle({
-    default: {
-      ttl: 60000,
-      limit: 4,
-      blockDuration: 5 * 60000
-    }
-  })
+		default: {
+			ttl: 60000,
+			limit: 4,
+			blockDuration: 5 * 60000
+		}
+	})
 	@HttpCode(HttpStatus.CREATED)
 	@Post('register-student')
 	async registerStudent(
@@ -105,16 +116,16 @@ export class AuthController {
 		// 		domain: process.env?.DOMAIN ?? ''
 		// 	}
 		// )
-		
+
 	}
-	
+
 	@Throttle({
-    default: {
-      ttl: 60000,
-      limit: 5,
-      blockDuration: 5 * 60000
-    }
-  })
+		default: {
+			ttl: 60000,
+			limit: 5,
+			blockDuration: 5 * 60000
+		}
+	})
 	@HttpCode(HttpStatus.OK)
 	@Post('login')
 	async login(
@@ -155,7 +166,7 @@ export class AuthController {
 				domain: process.env?.DOMAIN ?? ''
 			}
 		)
-		.json(userData)
+			.json(userData)
 	}
 
 	@HttpCode(HttpStatus.OK)
@@ -165,12 +176,12 @@ export class AuthController {
 		@Res() res: Response,
 	) {
 		const { refreshToken, token } = req.cookies
-		
+
 		// проверить, валиден ещё accessToken
 		// если accessToken не валиден - сделать новый с помощью refreshToken
 		const userData = await this.AuthService.refresh(refreshToken, token)
 		// console.log(JSON.stringify(userData.user.roles));
-		
+
 		res.cookie(
 			'refreshToken',
 			refreshToken,
@@ -180,7 +191,7 @@ export class AuthController {
 				secure: eval(process.env.HTTPS),
 				domain: process.env?.DOMAIN ?? ''
 			}
-		)		
+		)
 		res.cookie(
 			'token',
 			userData.accessToken,
@@ -207,12 +218,12 @@ export class AuthController {
 	}
 
 	@Throttle({
-    default: {
-      ttl: 60000,
-      limit: 4,
-      blockDuration: 5 * 60000
-    }
-  })
+		default: {
+			ttl: 60000,
+			limit: 4,
+			blockDuration: 5 * 60000
+		}
+	})
 	@Post('reset-password')
 	async resetPassword(
 		@Res() res: Response,
@@ -250,10 +261,10 @@ export class AuthController {
 	@HttpCode(HttpStatus.OK)
 	@Post('update')
 	async update(
-		@Req() req: RequestWithUser,
-		@Body('user') new_user: UserFromClient
+		@Body('user') newUser: UserFromClient,
+		@Body('userId') userId: string
 	) {
-		return await this.AuthService.update(new_user, req.user)
+		return await this.AuthService.update(newUser, userId)
 	}
 
 	@HttpCode(HttpStatus.OK)
@@ -270,5 +281,30 @@ export class AuthController {
 	async getAllUsers(
 	) {
 		return await this.AuthService.getAllUsers()
+	}
+
+	@Post('upload-avatar')
+	@UseInterceptors(AnyFilesInterceptor())
+	async uploadAvatar(
+		@UploadedFiles() files: Array<Express.Multer.File>,
+		@Query('user_id') userId: String,
+	) {
+		let filenames = [];
+
+		for (let file of files) {
+			if (file.originalname.startsWith('avatar')) {
+				file.buffer = await sharp(file.buffer).resize(300, 300).toBuffer()
+			}
+			let uploadResult = await YaCloud.Upload({
+				file,
+				path: 'avatars',
+				fileName: file.originalname,
+			});
+			filenames.push(uploadResult.Location);
+		}
+
+		if (filenames.length == 0) return
+
+		return await this.UserModel.findByIdAndUpdate(userId, { $push: { avatars: filenames[0] } });
 	}
 }

@@ -163,8 +163,8 @@ export class AuthService {
     return await this.TokenService.removeToken(refreshToken)
   }
 
-  async update(new_user: UserFromClient, user: UserFromClient) {
-    return await this.UserModel.findByIdAndUpdate(user._id, new_user, {
+  async update(newUser: UserFromClient, userId: string) {
+    return await this.UserModel.findByIdAndUpdate(userId, newUser, {
       new: true,
       runValidators: true
     })
