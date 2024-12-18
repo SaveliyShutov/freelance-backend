@@ -305,6 +305,6 @@ export class AuthController {
 
 		if (filenames.length == 0) return
 
-		return await this.UserModel.findByIdAndUpdate(userId, { $push: { avatars: filenames[0] } });
+		return await this.UserModel.findByIdAndUpdate(userId, { $set: { avatars: [filenames[0]] } });
 	}
 }
