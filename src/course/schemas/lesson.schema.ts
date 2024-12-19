@@ -28,9 +28,9 @@ export class LessonClass {
   shortDescription: string
 
   @Prop({
-    type: [String]
+    type: []
   })
-  links: string[]
+  links: any[]
 
   @Prop({
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Homework' }],
