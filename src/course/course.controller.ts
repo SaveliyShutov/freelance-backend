@@ -33,18 +33,18 @@ export class CourseController {
     @Body('courses') courses: any
   ) {
     // когда админ - получает все курсы
-    // когда обычный пользователь только свои курсы    
+    // когда обычный пользователь только свои курсы
     return await this.CourseModel.find({ _id: { $in: courses } })
   }
 
   @UseGuards(TeacherAuthGuard)
   @Post('teacher/get-all')
   async teacherGetAll(
+    @Body('courses') courses: any
   ) {
     // когда админ - получает все курсы
-    // когда обычный пользователь только свои курсы    
-    // return await this.CourseModel.find({ _id: { $in: courses } })
-    return await this.CourseModel.find({})
+    // когда обычный пользователь только свои курсы
+    return await this.CourseModel.find({ _id: { $in: courses } })
   }
 
   @UseGuards(TeacherAuthGuard)
@@ -88,7 +88,7 @@ export class CourseController {
   ) {
     let result = await this.CourseModel.findByIdAndUpdate(courseId, { $push: { students: userId } })
     if (result) {
-      return await this.UserModel.findByIdAndUpdate(userId, { $push: { courses: courseId } })
+      return await this.UserModel.findByIdAndUpdate(userId, { $push: { myCourses: courseId } })
     }
     return;
   }
@@ -137,7 +137,10 @@ export class CourseController {
   async createCourse(
     @Body('course') course: any
   ) {
-    return await this.CourseModel.create(course)
+    let courseFromDb = await this.CourseModel.create(course)
+    await this.UserModel.findByIdAndUpdate(course.teacher, { $push: { createdCourses: courseFromDb._id } })
+
+    return courseFromDb
   }
 
   @Get('get-lessons-by-course')

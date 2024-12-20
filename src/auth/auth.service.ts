@@ -171,6 +171,6 @@ export class AuthService {
   }
 
   async getAllUsers() {
-    return await this.UserModel.find({}).populate('courses')
+    return await this.UserModel.find({}).populate('myCourses')
   }
 }
