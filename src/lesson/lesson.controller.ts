@@ -85,4 +85,11 @@ export class LessonController {
   ) {
     return await this.HomeworkModel.find({ course: { $in: courses } })
   }
+
+  @Post('lessons-by-courses')
+  async getLessonsByCourses(
+    @Body('courses') courses: string[]
+  ) {
+    return await this.LessonModel.find({ course: { $in: courses } })
+  }
 }
