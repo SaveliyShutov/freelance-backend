@@ -23,22 +23,26 @@ export class HomeworkClass {
   @Prop({
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'Course',
+    required: true,
   })
   course: mongoose.Schema.Types.ObjectId
 
   @Prop({
     type: String,
+    required: true,
   })
   courseName: string
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Lesson',
+    required: true,
   })
   lesson: mongoose.Schema.Types.ObjectId
 
   @Prop({
     type: String,
+    required: true,
   })
   lessonName: string
 }
