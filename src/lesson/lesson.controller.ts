@@ -122,9 +122,10 @@ export class LessonController {
     });
 
     let hwFromDb = await this.HomeworkModel.findById(homeworkId);
-    if (hwFromDb?._id) {
-      hwFromDb.materials.push(...fileNames)
+    if (hwFromDb?._id) {      
+      hwFromDb.materials['archives'].push(...fileNames)
       // await this.HomeworkModel.findByIdAndUpdate(homeworkId, { materials: fileNames })
+      hwFromDb.markModified('materials.archives')
       return await hwFromDb.save()
     }
     return null

@@ -1,10 +1,13 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 
+import type { Material } from '../types/material.interface'
+import { initialMaterial } from '../types/material.interface'
+
 export type HomeworkDocument = HydratedDocument<HomeworkClass>
 
 @Schema()
-export class HomeworkClass {  
+export class HomeworkClass {
   @Prop({
     type: String,
   })
@@ -16,12 +19,14 @@ export class HomeworkClass {
   hwText: string
 
   @Prop({
-    type: [String],
+    type: Object,
+    default: initialMaterial,
+    required: false,
   })
-  materials: string[]
+  materials: Material
 
   @Prop({
-    type: mongoose.Schema.Types.ObjectId, 
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Course',
     required: true,
   })
