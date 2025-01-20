@@ -83,7 +83,7 @@ export class LessonController {
   @Post('homeworks-by-courses')
   async getHomeworksByCourses(
     @Body('courses') courses: string[]
-  ) {    
+  ) {
     return await this.HomeworkModel.find({ course: { $in: courses } })
   }
 
@@ -122,12 +122,20 @@ export class LessonController {
     });
 
     let hwFromDb = await this.HomeworkModel.findById(homeworkId);
-    if (hwFromDb?._id) {      
+    if (hwFromDb?._id) {
       hwFromDb.materials['archives'].push(...fileNames)
       // await this.HomeworkModel.findByIdAndUpdate(homeworkId, { materials: fileNames })
       hwFromDb.markModified('materials.archives')
       return await hwFromDb.save()
     }
     return null
+  }
+
+  @Post('add-video')
+  async addVideo(
+    @Body('lessonId') lessonId: string,
+    @Body('videoUrl') videoUrl: string
+  ) {
+    return await this.LessonModel.findByIdAndUpdate(lessonId, { $push: { videos: videoUrl } })
   }
 }
