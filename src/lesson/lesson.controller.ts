@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { LessonService } from './lesson.service';
+import { FilesInterceptor } from '@nestjs/platform-express';
 
 // types
 import { Lesson } from 'src/course/interfaces/lesson.interface';
@@ -99,5 +100,50 @@ export class LessonController {
     @Body('courses') courses: string[]
   ) {
     return await this.LessonModel.find({ course: { $in: courses } })
+  }
+
+  @Post('add-homework')
+  async addHomework(
+    @Body('newHomework') homework: any,
+    @Body('lessonId') lessonId: string,
+  ) {
+    let hwFromDb = await this.HomeworkModel.create(homework);
+
+    if (hwFromDb._id) {
+      let res = await this.LessonModel.findByIdAndUpdate(lessonId, { $push: { homework: hwFromDb._id } })
+      return hwFromDb
+    }
+
+    return null;
+  }
+
+  @Post('upload/archives')
+  @UseInterceptors(FilesInterceptor('files', 10)) // 'files' is the form field name, max 10 files
+  async uploadArchives(
+    @UploadedFiles() files: Express.Multer.File[],
+    @Query('homework_id') homeworkId: string) {
+
+    const fileNames = files.map(file => {
+      let spl = file.path.split('/');
+      spl.splice(0, 1) // path is public/solutions/..., we dont need public in out path
+      return spl.join('/')
+    });
+
+    let hwFromDb = await this.HomeworkModel.findById(homeworkId);
+    if (hwFromDb?._id) {
+      hwFromDb.materials['archives'].push(...fileNames)
+      // await this.HomeworkModel.findByIdAndUpdate(homeworkId, { materials: fileNames })
+      hwFromDb.markModified('materials.archives')
+      return await hwFromDb.save()
+    }
+    return null
+  }
+
+  @Post('add-video')
+  async addVideo(
+    @Body('lessonId') lessonId: string,
+    @Body('videoUrl') videoUrl: string
+  ) {
+    return await this.LessonModel.findByIdAndUpdate(lessonId, { $push: { videos: videoUrl } })
   }
 }

@@ -78,7 +78,11 @@ export class CourseController {
   async getCourseByIdWithLessons(
     @Query('course_id') courseId: string
   ) {
-    return await this.CourseModel.findById(courseId).populate({ path: 'lessons', populate: { path: 'homework' } })
+    try {
+      return await this.CourseModel.findById(courseId).populate({ path: 'lessons', populate: { path: 'homework' } })
+    } catch (error) {
+      return error
+    }
   }
 
   @Post('add-user-to-course')
