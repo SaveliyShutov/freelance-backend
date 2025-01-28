@@ -83,7 +83,15 @@ export class LessonController {
   async getHomeworksByCourses(
     @Body('courses') courses: string[]
   ) {
-    return await this.HomeworkModel.find({ course: { $in: courses } })
+    return await this.HomeworkModel.find({ course: { $in: courses } }).populate({
+      path: 'course',
+      select: {
+        images: 1,
+        name: 1,
+        teacher: 1,
+        _id: 1,
+      },
+    })
   }
 
   @Post('lessons-by-courses')

@@ -7,5 +7,6 @@ export interface Homework {
   course: mongoose.Types.ObjectId,
   lesson: mongoose.Types.ObjectId,
   courseName: string,
+  lessonImages: Object;
   lessonName: string,
 }

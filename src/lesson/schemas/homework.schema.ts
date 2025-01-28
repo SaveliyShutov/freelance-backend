@@ -38,6 +38,12 @@ export class HomeworkClass {
   lesson: mongoose.Schema.Types.ObjectId
 
   @Prop({
+    type: Array,
+    required: false,
+  })
+  lessonImages: Object;
+
+  @Prop({
     type: String,
   })
   lessonName: string
