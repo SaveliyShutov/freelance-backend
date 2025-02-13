@@ -56,6 +56,11 @@ export class HomeworkClass {
     required: true,
   })
   lessonName: string
+
+  @Prop({
+    type: String,
+  })
+  telemostLink: string
 }
 
 export const HomeworkSchema = SchemaFactory.createForClass(HomeworkClass)
