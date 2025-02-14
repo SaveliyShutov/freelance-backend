@@ -28,6 +28,11 @@ export class LessonClass {
   shortDescription: string
 
   @Prop({
+    type: String,
+  })
+  telemostLink: string
+
+  @Prop({
     type: []
   })
   links: any[]

@@ -13,4 +13,5 @@ export interface Lesson {
   homework: string,
   links: Link[],
   course: mongoose.Types.ObjectId,
+  telemostLink: string
 }
