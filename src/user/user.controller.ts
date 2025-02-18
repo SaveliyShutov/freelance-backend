@@ -11,9 +11,7 @@ import {
   Patch,
 } from '@nestjs/common';
 
-import { SomeAdminGuard } from 'src/admin/some_admin.guard';
 import { RolesService } from 'src/roles/roles.service';
-import { GlobalAdminGuard } from 'src/admin/global_admin.guard';
 
 import { UserService } from './user.service';
 import ApiError from 'src/exceptions/errors/api-error';
@@ -52,19 +50,19 @@ export class UserController {
     return candidate;
   }
 
-  @HttpCode(HttpStatus.OK)
-  @UseGuards(SomeAdminGuard)
-  @Post('change-user')
-  async changeUser(
-    @Req() req: RequestWithUser,
-    @Body('user') user: UserFromClient,
-  ) {
-    let subject_user = await this.UserModel.findById(user._id);
+  // @HttpCode(HttpStatus.OK)
+  // @UseGuards(SomeAdminGuard)
+  // @Post('change-user')
+  // async changeUser(
+  //   @Req() req: RequestWithUser,
+  //   @Body('user') user: UserFromClient,
+  // ) {
+  //   let subject_user = await this.UserModel.findById(user._id);
 
-    // ... Защиты, проверки
+  //   // ... Защиты, проверки
 
-    await subject_user.updateOne(user, { runValidators: true });
-  }
+  //   await subject_user.updateOne(user, { runValidators: true });
+  // }
 
   // async addRole(user_email: string, role_type: string) {
   //   let role: Role = {
