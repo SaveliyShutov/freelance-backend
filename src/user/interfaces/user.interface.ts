@@ -1,5 +1,4 @@
 import mongoose from "mongoose"
-import type { Role } from "../../roles/interfaces/role.interface";
 
 export interface User {
   _id: mongoose.Types.ObjectId
@@ -7,7 +6,6 @@ export interface User {
   surname: string
   email: string
   password: string
-  roles: Role[]
-  myCourses: string[]
-  createdCourses: string[]
+  phone: string
+  role: string
 }

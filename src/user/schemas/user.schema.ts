@@ -32,30 +32,18 @@ export class UserClass {
   password: string;
 
   @Prop({
-    type: Array,
-    default: [],
+    type: String,
+    default: 'worker',
     required: false,
   })
-  roles: string[];
+  role: string;
 
-  @Prop({
-    type: Array,
-    default: [],
-    required: false
-  })
-  avatars: string[];
-
-  @Prop({
-    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
-    default: [],
-  })
-  myCourses: mongoose.Schema.Types.ObjectId[];
-
-  @Prop({
-    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
-    default: [],
-  })
-  createdCourses: mongoose.Schema.Types.ObjectId[];
+  // @Prop({
+  //   type: Array,
+  //   default: [],
+  //   required: false
+  // })
+  // avatars: string[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(UserClass);
