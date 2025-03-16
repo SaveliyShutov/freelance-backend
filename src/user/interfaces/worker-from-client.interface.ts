@@ -1,9 +1,9 @@
-export interface UserFromClient {
+export interface WorkerFromClient {
   _id: string
   name: string
   surname: string
-  email: string
-  password: string
   phone: string
   role: string
+  password: string
+  email: string
 }

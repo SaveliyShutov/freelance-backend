@@ -1,8 +1,8 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res, UseGuards, UploadedFiles, UseInterceptors, Query } from '@nestjs/common'
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { Request, Response } from 'express';
-import RequestWithUser from 'src/types/request-with-user.type';
-import { UserFromClient } from 'src/user/interfaces/user-from-client.interface';
+import { WorkerFromClient } from 'src/user/interfaces/worker-from-client.interface';
+import { EmployerFromClient } from 'src/user/interfaces/employer-from-client.interface';
 import { User } from 'src/user/interfaces/user.interface';
 import { AuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
@@ -87,13 +87,13 @@ export class AuthController {
 	@Post('registration')
 	async registration(
 		@Res({ passthrough: true }) res: Response,
-		@Body() user: User
+		@Body() user: EmployerFromClient | WorkerFromClient
 	) {
 		const userData = await this.AuthService.registration(user)
 		// await this.mailService.sendUserConfirmation(user);
 
-		let refreshToken = userData.refreshToken
-		delete userData.refreshToken
+		// let refreshToken = userData.refreshToken
+		// delete userData.refreshToken
 
 		// dont send cookies
 		res.json(userData)
@@ -156,65 +156,66 @@ export class AuthController {
 				secure: eval(process.env.HTTPS),
 				domain: process.env?.DOMAIN ?? ''
 			}
-		).cookie(
-			'roles',
-			JSON.stringify(userData.user.role),
-			{
-				maxAge: 7 * 24 * 60 * 60 * 1000,
-				httpOnly: !eval(process.env.HTTPS),
-				secure: eval(process.env.HTTPS),
-				domain: process.env?.DOMAIN ?? ''
-			}
 		)
+		// ).cookie(
+		// 	'current',
+		// 	JSON.stringify(userData.user.role),
+		// 	{
+		// 		maxAge: 7 * 24 * 60 * 60 * 1000,
+		// 		httpOnly: !eval(process.env.HTTPS),
+		// 		secure: eval(process.env.HTTPS),
+		// 		domain: process.env?.DOMAIN ?? ''
+		// 	}
+		// )
 			.json(userData)
 	}
-		@HttpCode(HttpStatus.OK)
-		@Get('refresh')
-		async refresh(
-			@Req() req: Request,
-			@Res() res: Response,
-		) {
-			const { refreshToken, token } = req.cookies
+	// 	@HttpCode(HttpStatus.OK)
+	// 	@Get('refresh')
+	// 	async refresh(
+	// 		@Req() req: Request,
+	// 		@Res() res: Response,
+	// 	) {
+	// 		const { refreshToken, token } = req.cookies
 
-			// проверить, валиден ещё accessToken
-			// если accessToken не валиден - сделать новый с помощью refreshToken
-			const userData = await this.AuthService.refresh(refreshToken, token)
-			// console.log(JSON.stringify(userData.user.roles));
+	// 		// проверить, валиден ещё accessToken
+	// 		// если accessToken не валиден - сделать новый с помощью refreshToken
+	// 		const userData = await this.AuthService.refresh(refreshToken, token)
+	// 		// console.log(JSON.stringify(userData.user.roles));
 
-			res.cookie(
-				'refreshToken',
-				refreshToken,
-				{
-					maxAge: 30 * 24 * 60 * 60 * 1000,
-					httpOnly: !eval(process.env.HTTPS),
-					secure: eval(process.env.HTTPS),
-					domain: process.env?.DOMAIN ?? ''
-				}
-			)
-			res.cookie(
-				'token',
-				userData.accessToken,
-				{
-					maxAge: 7 * 24 * 60 * 60 * 1000,
-					httpOnly: !eval(process.env.HTTPS),
-					secure: eval(process.env.HTTPS),
-					domain: process.env?.DOMAIN ?? ''
-				}
-			)
-			res.json(userData.user)
-		}
+	// 		res.cookie(
+	// 			'refreshToken',
+	// 			refreshToken,
+	// 			{
+	// 				maxAge: 30 * 24 * 60 * 60 * 1000,
+	// 				httpOnly: !eval(process.env.HTTPS),
+	// 				secure: eval(process.env.HTTPS),
+	// 				domain: process.env?.DOMAIN ?? ''
+	// 			}
+	// 		)
+	// 		res.cookie(
+	// 			'token',
+	// 			userData.accessToken,
+	// 			{
+	// 				maxAge: 7 * 24 * 60 * 60 * 1000,
+	// 				httpOnly: !eval(process.env.HTTPS),
+	// 				secure: eval(process.env.HTTPS),
+	// 				domain: process.env?.DOMAIN ?? ''
+	// 			}
+	// 		)
+	// 		res.json(userData.user)
+	// 	}
 
-		@HttpCode(HttpStatus.OK)
-		@Post('logout')
-		async logout(
-			@Req() req: Request,
-			@Res() res: Response,
-		) {
-			const { refreshToken } = req.cookies
+	// 	@HttpCode(HttpStatus.OK)
+	// 	@Post('logout')
+	// 	async logout(
+	// 		@Req() req: Request,
+	// 		@Res() res: Response,
+	// 	) {
+	// 		const { refreshToken } = req.cookies
 
-			await this.AuthService.logout(refreshToken)
-			res.clearCookie('refreshToken').clearCookie('token').send()
-		}
+	// 		await this.AuthService.logout(refreshToken)
+	// 		res.clearCookie('refreshToken').clearCookie('token').send()
+	// 	}
 
 	// 	@Throttle({
 	// 		default: {

@@ -15,10 +15,10 @@ export class MailService {
       from: '"Команда проекта Глазов-есть!" <plpo@ya.ru>', // override default from
       subject: 'Спасибо за регистрацию',
       template: './confirmation', // `.hbs` extension is appended automatically
-      context: { // ✏️ filling curly brackets with content
-        name: user.name,
-        // url,
-      },
+      // context: { // ✏️ filling curly brackets with content
+      //   name: user.name,
+      //   // url,
+      // },
     });
   }
 

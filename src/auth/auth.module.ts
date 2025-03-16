@@ -9,12 +9,17 @@ import { MailService } from 'src/mail/mail.service';
 
 // mongodb
 import UserModel from 'src/user/models/user.model';
+import EmployerModel from 'src/employer/models/employer.model';
+import WorkerModel from 'src/worker/models/worker.model';
+
 
 @Module({
   imports: [
     TokenModule,
     JwtModule,
     UserModel,
+    EmployerModel,
+    WorkerModel
   ],
   controllers: [AuthController],
   providers: [AuthService, RolesService, MailService]

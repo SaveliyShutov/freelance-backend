@@ -4,22 +4,27 @@ import { Model } from 'mongoose'
 import ApiError from 'src/exceptions/errors/api-error'
 import { InjectModel } from '@nestjs/mongoose'
 import { UserClass } from 'src/user/schemas/user.schema'
+import { WorkerClass } from 'src/worker/schemas/worker.schema'
+import { EmployerClass } from 'src/employer/schemas/employer.schema'
 import { User } from 'src/user/interfaces/user.interface'
-import { UserFromClient } from 'src/user/interfaces/user-from-client.interface'
 import { RolesService } from 'src/roles/roles.service'
 import * as bcrypt from 'bcryptjs'
 import { MailService } from 'src/mail/mail.service'
+import { WorkerFromClient } from 'src/user/interfaces/worker-from-client.interface';
+import { EmployerFromClient } from 'src/user/interfaces/employer-from-client.interface';
+import { workerData } from 'worker_threads'
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel('User') private UserModel: Model<UserClass>,
+    @InjectModel('Worker') private WorkerModel: Model<WorkerClass>,
+    @InjectModel('Employer') private EmployerModel: Model<EmployerClass>,
     private TokenService: TokenService,
-    private RolesService: RolesService,
     private mailService: MailService,
   ) { }
 
-  async registration(user: User | UserFromClient) {
+  async registration(user: EmployerFromClient | WorkerFromClient) {
     const candidate = await this.UserModel.findOne({ email: user.email })
 
     if (candidate)
@@ -28,20 +33,43 @@ export class AuthService {
     if (user.password.length < 8)
       throw ApiError.BadRequest('Слишком короткий пароль')
 
+    let created_user;
+    let worker;
+    let employer;
+
     const password = await bcrypt.hash(user.password, 3)
-    const created_user = (await this.UserModel.create(Object.assign(user, { password }))).toObject()
+
+    if (user.role == 'worker') {
+      worker = await this.WorkerModel.create(user)
+      created_user = (await this.UserModel.create(Object.assign(user, { password }, { worker: worker._id }))).toObject()
+    }
+    else if (user.role == 'employer') {
+      employer = await this.EmployerModel.create(user)
+      created_user = (await this.UserModel.create(Object.assign(user, { password }, { employer: employer._id }))).toObject()
+    }
 
     const tokens = this.TokenService.generateTokens({ _id: created_user._id, password: created_user.password })
     await this.TokenService.saveToken(tokens.refreshToken)
 
     return {
       ...tokens,
-      user: created_user
+      user: created_user,
+      worker: worker,
+      employer: employer
     }
   }
 
   async login(email: string, password: string) {
     const user = await this.UserModel.findOne({ email })
+    let employer;
+    let worker
+
+    if (user?.employer) {
+      employer = await this.EmployerModel.findOne( user.employer )
+    }
+    if (user?.worker) {
+      worker = await this.WorkerModel.findOne( user.worker )
+    }
 
     if (!user) {
       throw ApiError.BadRequest('Пользователь с таким email не найден')
@@ -61,7 +89,9 @@ export class AuthService {
 
     return {
       ...tokens,
-      user
+      user,
+      employer,
+      worker,
     }
   }
 
@@ -71,14 +101,13 @@ export class AuthService {
 
     // проверить, валиден ли ещё accessToken
     userData = this.TokenService.validateAccessToken(accessToken)
-    
     if (userData != null) {
       user = await this.UserModel.findById(userData._id)
-      
+
       return {
         refreshToken: refreshToken,
         accessToken: accessToken,
-        user: user
+        user: user,
       }
     }
     // если accessToken не валиден - пройти авторизацию с refreshToken и создать новый accessToken
@@ -103,7 +132,7 @@ export class AuthService {
     // new accessToken, чтобы пользователь мог зайти в
     // систему ближайшие 15 минут без использоватния refreshToken
     const newAccessToken = this.TokenService.generateAccessToken({ _id: user._id, password: user.password })
-    
+
     return {
       refreshToken: refreshToken,
       accessToken: newAccessToken,
@@ -163,12 +192,12 @@ export class AuthService {
     return await this.TokenService.removeToken(refreshToken)
   }
 
-  async update(newUser: UserFromClient, userId: string) {
-    return await this.UserModel.findByIdAndUpdate(userId, newUser, {
-      new: true,
-      runValidators: true
-    })
-  }
+  // async update(newUser: UserFromClient, userId: string) {
+  //   return await this.UserModel.findByIdAndUpdate(userId, newUser, {
+  //     new: true,
+  //     runValidators: true
+  //   })
+  // }
 
   async getAllUsers() {
     return await this.UserModel.find({}).populate('myCourses')
