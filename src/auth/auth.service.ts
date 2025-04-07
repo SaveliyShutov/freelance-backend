@@ -4,27 +4,23 @@ import { Model } from 'mongoose'
 import ApiError from 'src/exceptions/errors/api-error'
 import { InjectModel } from '@nestjs/mongoose'
 import { UserClass } from 'src/user/schemas/user.schema'
-import { WorkerClass } from 'src/worker/schemas/worker.schema'
-import { EmployerClass } from 'src/employer/schemas/employer.schema'
 import { User } from 'src/user/interfaces/user.interface'
 import { RolesService } from 'src/roles/roles.service'
 import * as bcrypt from 'bcryptjs'
 import { MailService } from 'src/mail/mail.service'
-import { WorkerFromClient } from 'src/user/interfaces/worker-from-client.interface';
-import { EmployerFromClient } from 'src/user/interfaces/employer-from-client.interface';
 import { workerData } from 'worker_threads'
+import { UserFromClient } from 'src/user/interfaces/user-from-client.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel('User') private UserModel: Model<UserClass>,
-    @InjectModel('Worker') private WorkerModel: Model<WorkerClass>,
-    @InjectModel('Employer') private EmployerModel: Model<EmployerClass>,
     private TokenService: TokenService,
     private mailService: MailService,
   ) { }
 
-  async registration(user: EmployerFromClient | WorkerFromClient) {
+  async registration(user: UserFromClient | User) {
+    console.log(user)
     const candidate = await this.UserModel.findOne({ email: user.email })
 
     if (candidate)
@@ -33,20 +29,8 @@ export class AuthService {
     if (user.password.length < 8)
       throw ApiError.BadRequest('Слишком короткий пароль')
 
-    let created_user;
-    let worker;
-    let employer;
-
     const password = await bcrypt.hash(user.password, 3)
-
-    if (user.role == 'worker') {
-      worker = await this.WorkerModel.create(user)
-      created_user = (await this.UserModel.create(Object.assign(user, { password }, { worker: worker._id }))).toObject()
-    }
-    else if (user.role == 'employer') {
-      employer = await this.EmployerModel.create(user)
-      created_user = (await this.UserModel.create(Object.assign(user, { password }, { employer: employer._id }))).toObject()
-    }
+    const created_user = (await this.UserModel.create(Object.assign(user, { password }))).toObject()
 
     const tokens = this.TokenService.generateTokens({ _id: created_user._id, password: created_user.password })
     await this.TokenService.saveToken(tokens.refreshToken)
@@ -54,22 +38,11 @@ export class AuthService {
     return {
       ...tokens,
       user: created_user,
-      worker: worker,
-      employer: employer
     }
   }
 
   async login(email: string, password: string) {
     const user = await this.UserModel.findOne({ email })
-    let employer;
-    let worker
-
-    if (user?.employer) {
-      employer = await this.EmployerModel.findOne( user.employer )
-    }
-    if (user?.worker) {
-      worker = await this.WorkerModel.findOne( user.worker )
-    }
 
     if (!user) {
       throw ApiError.BadRequest('Пользователь с таким email не найден')
@@ -90,8 +63,6 @@ export class AuthService {
     return {
       ...tokens,
       user,
-      employer,
-      worker,
     }
   }
 
@@ -101,13 +72,14 @@ export class AuthService {
 
     // проверить, валиден ли ещё accessToken
     userData = this.TokenService.validateAccessToken(accessToken)
+
     if (userData != null) {
       user = await this.UserModel.findById(userData._id)
 
       return {
         refreshToken: refreshToken,
         accessToken: accessToken,
-        user: user,
+        user: user
       }
     }
     // если accessToken не валиден - пройти авторизацию с refreshToken и создать новый accessToken
@@ -140,53 +112,53 @@ export class AuthService {
     }
   }
 
-  async validateEnterToResetPassword(user_id: any, token: string) {
-    let candidate = await this.UserModel.findById(user_id)
+  // async validateEnterToResetPassword(user_id: any, token: string) {
+  //   let candidate = await this.UserModel.findById(user_id)
 
-    if (!candidate._id) throw ApiError.BadRequest('Пользователь с таким _id не найден')
+  //   if (!candidate._id) throw ApiError.BadRequest('Пользователь с таким _id не найден')
 
-    let secret = process.env.JWT_RESET_SECRET + candidate.password
+  //   let secret = process.env.JWT_RESET_SECRET + candidate.password
 
-    let result = this.TokenService.validateResetToken(token, secret)
+  //   let result = this.TokenService.validateResetToken(token, secret)
 
-    if (!result) throw ApiError.AccessDenied()
+  //   if (!result) throw ApiError.AccessDenied()
 
-    return result
-  }
+  //   return result
+  // }
 
-  async resetPassword(password: string, token: string, userId: string) {
-    try {
-      await this.validateEnterToResetPassword(userId, token)
+  // async resetPassword(password: string, token: string, userId: string) {
+  //   try {
+  //     await this.validateEnterToResetPassword(userId, token)
 
-      const hashPassword = await bcrypt.hash(password, 3)
-      const user = await this.UserModel.findByIdAndUpdate(userId, { password: hashPassword })
+  //     const hashPassword = await bcrypt.hash(password, 3)
+  //     const user = await this.UserModel.findByIdAndUpdate(userId, { password: hashPassword })
 
-      const tokens = this.TokenService.generateTokens({ _id: user._id, password: user.password })
-      await this.TokenService.saveToken(tokens.refreshToken)
+  //     const tokens = this.TokenService.generateTokens({ _id: user._id, password: user.password })
+  //     await this.TokenService.saveToken(tokens.refreshToken)
 
-      return {
-        ...tokens,
-        user: user
-      }
-    } catch (error) {
-      return null
-    }
-  }
+  //     return {
+  //       ...tokens,
+  //       user: user
+  //     }
+  //   } catch (error) {
+  //     return null
+  //   }
+  // }
 
-  async sendResetLink(email: string) {
-    let candidate = await this.UserModel.findOne({ email })
-    if (!candidate)
-      throw ApiError.BadRequest('Пользователь с таким email не найден')
+  // async sendResetLink(email: string) {
+  //   let candidate = await this.UserModel.findOne({ email })
+  //   if (!candidate)
+  //     throw ApiError.BadRequest('Пользователь с таким email не найден')
 
-    const secret = process.env.JWT_RESET_SECRET + candidate.password
-    const token = this.TokenService.createResetToken({ _id: candidate._id, password: candidate.password }, secret)
+  //   const secret = process.env.JWT_RESET_SECRET + candidate.password
+  //   const token = this.TokenService.createResetToken({ _id: candidate._id, password: candidate.password }, secret)
 
-    const link = process.env.CLIENT_URL + `/forgot-password?user_id=${candidate._id}&token=${token}`
+  //   const link = process.env.CLIENT_URL + `/forgot-password?user_id=${candidate._id}&token=${token}`
 
-    await this.mailService.sendResetLink(link, email)
+  //   await this.mailService.sendResetLink(link, email)
 
-    return link
-  }
+  //   return link
+  // }
 
   async logout(refreshToken: string) {
     return await this.TokenService.removeToken(refreshToken)
@@ -199,7 +171,7 @@ export class AuthService {
   //   })
   // }
 
-  async getAllUsers() {
-    return await this.UserModel.find({}).populate('myCourses')
-  }
+  // async getAllUsers() {
+  //   return await this.UserModel.find({}).populate('myCourses')
+  // }
 }

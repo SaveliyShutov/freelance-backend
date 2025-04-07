@@ -16,13 +16,6 @@ import { RolesService } from 'src/roles/roles.service';
 import { UserService } from './user.service';
 import ApiError from 'src/exceptions/errors/api-error';
 
-
-// types
-import { Role } from '../roles/interfaces/role.interface';
-import { EmployerFromClient } from './interfaces/employer-from-client.interface';
-import { WorkerFromClient } from './interfaces/worker-from-client.interface';
-
-
 // all aboout MongoDB
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -38,17 +31,17 @@ export class UserController {
     private RolesService: RolesService,
   ) { }
 
-  @HttpCode(HttpStatus.OK)
-  @Get('get-by-id')
-  async get_by_id(@Query('_id') _id: string) {
-    let candidate = await this.UserModel.findById(_id, {
-      password: 0,
-    }).populate('orders').populate('managerIn');
-    if (!candidate)
-      throw ApiError.BadRequest('Пользователь с таким ID не найден');
+  // @HttpCode(HttpStatus.OK)
+  // @Get('get-by-id')
+  // async get_by_id(@Query('_id') _id: string) {
+  //   let candidate = await this.UserModel.findById(_id, {
+  //     password: 0,
+  //   }).populate('orders').populate('managerIn');
+  //   if (!candidate)
+  //     throw ApiError.BadRequest('Пользователь с таким ID не найден');
 
-    return candidate;
-  }
+  //   return candidate;
+  // }
 
   // @HttpCode(HttpStatus.OK)
   // @UseGuards(SomeAdminGuard)

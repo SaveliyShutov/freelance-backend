@@ -17,16 +17,115 @@ export class UserClass {
   password: string;
 
   @Prop({
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     required: false,
   })
-  worker: mongoose.Schema.Types.ObjectId;
+  employer_avatar: string;
 
   @Prop({
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     required: false,
   })
-  employer: mongoose.Schema.Types.ObjectId;
+  employer_name: string;
+
+  @Prop({
+    type: String,
+    required: false,
+  })
+  employer_shortDescription: string;
+
+  @Prop({
+    type: String,
+    required: false,
+  })
+  employer_description: string;
+
+  @Prop({
+    type: String,
+    required: false,
+  })
+  employer_rating: string;
+
+  @Prop({
+    type: Array,
+    required: false,
+  })
+  employer_reviews: string[];
+
+  @Prop({
+    type: Array,
+    required: false,
+  })
+  employer_orders: string[];
+
+  @Prop({
+    type: String,
+    required: false,
+  })
+  employer_address: string;
+
+  @Prop({
+    type: String,
+    required: false,
+  })
+  employer_contacts: string;
+
+  @Prop({
+    type: String,
+    required: false,
+  })
+  worker_name: string;
+
+  @Prop({
+    type: String,
+    required: false,
+  })
+  worker_surname: string;
+
+  @Prop({
+    type: String,
+    required: false,
+  })
+  worker_avatar: string;
+
+  @Prop({
+    type: String,
+    required: false,
+  })
+  worker_description: string;
+
+  @Prop({
+    type: Array,
+    required: false,
+  })
+  worker_applications: string[];
+
+  @Prop({
+    type: Array,
+    required: false,
+  })
+  worker_reviews: string[];
+
+  @Prop({
+    type: String,
+    required: false,
+  })
+  worker_address: string;
+
+  @Prop({
+    type: String,
+    required: false,
+  })
+  worker_phone: string;
+
+  @Prop({
+    type: String,
+    required: false,
+  })
+  worker_rating: string;
+
+
+
 }
 
 export const UserSchema = SchemaFactory.createForClass(UserClass);
