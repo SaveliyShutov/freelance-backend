@@ -2,8 +2,16 @@ import mongoose from "mongoose"
 
 export interface Order {
   _id: mongoose.Types.ObjectId
-  images: string[],
-  name: string,
+  images?: string[],
   shortDescription: string,
-  students: string[],
+  title: string,
+  type: string,
+  employer?: string, // employer._id
+  date: string,
+  hours: number,
+  location: string,
+  description: string,
+  budget: number,
+  applications?: []
 }
+

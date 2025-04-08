@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, UploadedFiles, UseInterceptors } from '@nestjs/common';
-import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { OrderService } from './order.service';
+import { Order } from 'src/order/interfaces/order.interface';
 
 // all aboout MongoDB
 import { InjectModel } from '@nestjs/mongoose';
@@ -9,13 +9,11 @@ import { Model } from 'mongoose';
 import { OrderClass } from './schemas/order.schema';
 import { UserClass } from 'src/user/schemas/user.schema';
 
-import YaCloud from 'src/s3/bucket';
 const sharp = require('sharp');
 
 import { AuthGuard } from 'src/auth/auth.guard';
 
-
-@Controller('orders')
+@Controller('order')
 export class OrderController {
   constructor(
     @InjectModel('Order') private OrderModel: Model<OrderClass>,
@@ -28,6 +26,16 @@ export class OrderController {
   async getAll(
   ) {
     return await this.OrderModel.find()
+  }
+
+  @Post('create')
+  async createOrder(
+    @Body('order') order: Order
+  ) {
+    let orderFromDb = await this.OrderModel.create(order)
+    await this.UserModel.findByIdAndUpdate(order.employer, { $push: { employer_orders: orderFromDb._id } })
+
+    return orderFromDb
   }
 
   // @Post('add-user-to-course')
@@ -68,14 +76,4 @@ export class OrderController {
   //     $set: setObj,
   //   });
   // }
-
-  @Post('create')
-  async createOrder(
-    @Body('order') order: any
-  ) {
-    let orderFromDb = await this.OrderModel.create(order)
-    // await this.UserModel.findByIdAndUpdate(order.organisation, { $push: { createdCourses: courseFromDb._id } })
-
-    return orderFromDb
-  }
 }

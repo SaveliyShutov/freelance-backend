@@ -20,7 +20,6 @@ export class AuthService {
   ) { }
 
   async registration(user: UserFromClient | User) {
-    console.log(user)
     const candidate = await this.UserModel.findOne({ email: user.email })
 
     if (candidate)

@@ -15,7 +15,7 @@ export class OrderClass {
     type: String,
     required: true,
   })
-  name: string
+  title: string
 
   @Prop({
     type: String,
