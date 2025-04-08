@@ -36,7 +36,12 @@ export class OrderClass {
   @Prop({
     type: mongoose.Schema.Types.ObjectId, ref: 'User',
   })
-  employer: mongoose.Schema.Types.ObjectId;
+  employer_id: mongoose.Schema.Types.ObjectId;
+
+  @Prop({
+    type: String,
+  })
+  employer_name: string
 
   @Prop({
     type: String,
@@ -46,12 +51,12 @@ export class OrderClass {
   @Prop({
     type: String,
   })
-  adress: string
+  address: string
 
   @Prop({
     type: String,
   })
-  price: string
+  budget: string
 
   @Prop({
     type: String,

@@ -6,10 +6,11 @@ export interface Order {
   shortDescription: string,
   title: string,
   type: string,
-  employer?: string, // employer._id
+  employer_id?: string, // employer._id
+  employer_name?: string, // employer.name
   date: string,
   hours: number,
-  location: string,
+  address: string,
   description: string,
   budget: number,
   applications?: []

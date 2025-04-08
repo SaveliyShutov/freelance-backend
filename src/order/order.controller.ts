@@ -22,10 +22,22 @@ export class OrderController {
   ) { }
 
   @UseGuards(AuthGuard)
-  @Post('get-all')
+  @Get('get-all')
   async getAll(
   ) {
     return await this.OrderModel.find()
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('get-by-id')
+  async getById(
+    @Query('order_id') order_id: string
+  ) {
+    try {
+      return await this.OrderModel.findById(order_id)
+    } catch (error) {
+      return error
+    }
   }
 
   @Post('create')
@@ -33,7 +45,7 @@ export class OrderController {
     @Body('order') order: Order
   ) {
     let orderFromDb = await this.OrderModel.create(order)
-    await this.UserModel.findByIdAndUpdate(order.employer, { $push: { employer_orders: orderFromDb._id } })
+    await this.UserModel.findByIdAndUpdate(order.employer_id, { $push: { employer_orders: orderFromDb._id } })
 
     return orderFromDb
   }
