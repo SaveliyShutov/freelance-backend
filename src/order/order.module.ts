@@ -7,6 +7,7 @@ import { TokenService } from 'src/token/token.service';
 // mongo models
 import OrderModel from './models/order.model';
 import UserModel from '../user/models/user.model';
+import AppicationModel from './models/application.model';
 import TokenModel from 'src/token/models/token.model';
 
 @Module({
@@ -14,6 +15,7 @@ import TokenModel from 'src/token/models/token.model';
     OrderModel,
     UserModel,
     TokenModel,
+    AppicationModel
   ],
   controllers: [OrderController],
   providers: [OrderService, TokenService],

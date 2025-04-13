@@ -1,12 +1,15 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { Order } from 'src/order/interfaces/order.interface';
+import { Application } from 'src/order/interfaces/application.interface';
+
 
 // all aboout MongoDB
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { OrderClass } from './schemas/order.schema';
+import { ApplicationClass } from './schemas/application.schema';
 import { UserClass } from 'src/user/schemas/user.schema';
 
 const sharp = require('sharp');
@@ -17,6 +20,7 @@ import { AuthGuard } from 'src/auth/auth.guard';
 export class OrderController {
   constructor(
     @InjectModel('Order') private OrderModel: Model<OrderClass>,
+    @InjectModel('Application') private ApplicationModel: Model<ApplicationClass>,
     @InjectModel('User') private UserModel: Model<UserClass>,
     private readonly orderService: OrderService
   ) { }
@@ -40,6 +44,7 @@ export class OrderController {
     }
   }
 
+  @UseGuards(AuthGuard)
   @Post('create')
   async createOrder(
     @Body('order') order: Order
@@ -48,6 +53,19 @@ export class OrderController {
     await this.UserModel.findByIdAndUpdate(order.employer_id, { $push: { employer_orders: orderFromDb._id } })
 
     return orderFromDb
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('create-application')
+  async createApplication(
+    @Body('application') application: Application
+  ) {
+    console.log(application)
+    let applicationFromDb = await this.ApplicationModel.create(application)
+    await this.OrderModel.findByIdAndUpdate(application.order, { $push: { applications: applicationFromDb._id } })
+    await this.UserModel.findByIdAndUpdate(application.worker, { $push: { worker_applications: applicationFromDb._id } })
+
+    return applicationFromDb
   }
 
   // @Post('add-user-to-course')
