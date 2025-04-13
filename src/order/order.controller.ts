@@ -60,7 +60,6 @@ export class OrderController {
   async createApplication(
     @Body('application') application: Application
   ) {
-    console.log(application)
     let applicationFromDb = await this.ApplicationModel.create(application)
     await this.OrderModel.findByIdAndUpdate(application.order, { $push: { applications: applicationFromDb._id } })
     await this.UserModel.findByIdAndUpdate(application.worker, { $push: { worker_applications: applicationFromDb._id } })
