@@ -45,6 +45,21 @@ export class OrderController {
   }
 
   @UseGuards(AuthGuard)
+  @Post('get-orders-with-lesson')
+  async getOrdersWithApplications(@Body('userOrders') userOrders: string[]) {
+    return await this.OrderModel.find({ _id: { $in: userOrders } })
+      .populate({
+        path: 'applications',
+        // select: {
+        //   images: 1,
+        //   name: 1,
+        //   shortDescription: 1,
+        //   course: 1,
+        // },
+      })
+  }
+
+  @UseGuards(AuthGuard)
   @Post('create')
   async createOrder(
     @Body('order') order: Order
