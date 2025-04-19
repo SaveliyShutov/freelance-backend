@@ -82,6 +82,42 @@ export class OrderController {
     return applicationFromDb
   }
 
+  @UseGuards(AuthGuard)
+  @Get('accept-application')
+  async acceptApplication(
+    @Query('application_id') application_id: string
+  ) {
+    let applicationFromDb = await this.ApplicationModel.findById(application_id)
+    // await this.OrderModel.findByIdAndUpdate(applicationFromDb.order, { $push: { applications: applicationFromDb._id } })
+    await this.ApplicationModel.findByIdAndUpdate(applicationFromDb._id, { status: 'одобрено' })
+
+    return applicationFromDb
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('decline-application')
+  async declineApplication(
+    @Query('application_id') application_id: string
+  ) {
+    let applicationFromDb = await this.ApplicationModel.findById(application_id)
+    // await this.OrderModel.findByIdAndUpdate(applicationFromDb.order, { $push: { applications: applicationFromDb._id } })
+    await this.ApplicationModel.findByIdAndUpdate(applicationFromDb._id, { status: 'отказано' })
+
+    return applicationFromDb
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('get-all-applications')
+  async getAllApplication(
+    @Body('userOrders') userOrders: string[]
+  ) {
+    // let applicationFromDb = await this.ApplicationModel.findById(application_id)
+    // await this.OrderModel.findByIdAndUpdate(applicationFromDb.order, { $push: { applications: applicationFromDb._id } })
+    // await this.ApplicationModel.findByIdAndUpdate(applicationFromDb._id, { status: 'отказано' })
+
+    // return applicationFromDb
+  }
+
   // @Post('add-user-to-course')
   // async addUserToCourse(
   //   @Body('courseId') courseId: string,

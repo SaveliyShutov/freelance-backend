@@ -37,6 +37,7 @@ export class ApplicationClass {
 
   @Prop({
     type: String,
+    default: 'в расмотрении',
   })
   status: string
 
