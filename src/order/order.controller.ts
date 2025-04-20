@@ -60,6 +60,21 @@ export class OrderController {
   }
 
   @UseGuards(AuthGuard)
+  @Post('get-applications-with-orders')
+  async getApplicationsWithOrders(@Body('userApplications') userApplications: string[]) {
+    return await this.ApplicationModel.find({ _id: { $in: userApplications } })
+      .populate({
+        path: 'order',
+        // select: {
+        //   images: 1,
+        //   name: 1,
+        //   shortDescription: 1,
+        //   course: 1,
+        // },
+      })
+  }
+
+  @UseGuards(AuthGuard)
   @Post('create')
   async createOrder(
     @Body('order') order: Order
