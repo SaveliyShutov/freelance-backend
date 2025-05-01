@@ -25,7 +25,6 @@ export class OrderController {
     private readonly orderService: OrderService
   ) { }
 
-  @UseGuards(AuthGuard)
   @Get('get-all')
   async getAll(
   ) {

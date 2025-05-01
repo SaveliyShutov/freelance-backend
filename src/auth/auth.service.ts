@@ -163,12 +163,12 @@ export class AuthService {
     return await this.TokenService.removeToken(refreshToken)
   }
 
-  // async update(newUser: UserFromClient, userId: string) {
-  //   return await this.UserModel.findByIdAndUpdate(userId, newUser, {
-  //     new: true,
-  //     runValidators: true
-  //   })
-  // }
+  async update(newUser: UserFromClient, userId: string) {
+    return await this.UserModel.findByIdAndUpdate(userId, newUser, {
+      new: true,
+      runValidators: true
+    })
+  }
 
   // async getAllUsers() {
   //   return await this.UserModel.find({}).populate('myCourses')

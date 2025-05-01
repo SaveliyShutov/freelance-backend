@@ -25,56 +25,6 @@ export class AuthController {
 		@InjectModel('User') private UserModel: Model<UserClass>,
 	) { }
 
-	// @Throttle({
-	// 	default: {
-	// 		ttl: 60000,
-	// 		limit: 4,
-	// 		blockDuration: 5 * 60000
-	// 	}
-	// })
-	// @HttpCode(HttpStatus.CREATED)
-	// @Post('registration')
-	// async registration(
-	// 	@Res({ passthrough: true }) res: Response,
-	// 	@Body() user: User
-	// ) {
-	// 	const userData = await this.AuthService.registration(user)
-	// 	await this.mailService.sendUserConfirmation(user);
-
-	// 	let refreshToken = userData.refreshToken
-	// 	delete userData.refreshToken
-
-	// 	res.cookie(
-	// 		'refreshToken',
-	// 		refreshToken,
-	// 		{
-	// 			maxAge: 30 * 24 * 60 * 60 * 1000,
-	// 			httpOnly: !eval(process.env.HTTPS),
-	// 			secure: eval(process.env.HTTPS),
-	// 			domain: process.env?.DOMAIN ?? ''
-	// 		}
-	// 	).cookie(
-	// 		'token',
-	// 		userData.accessToken,
-	// 		{
-	// 			maxAge: 7 * 24 * 60 * 60 * 1000,
-	// 			httpOnly: !eval(process.env.HTTPS),
-	// 			secure: eval(process.env.HTTPS),
-	// 			domain: process.env?.DOMAIN ?? ''
-	// 		}
-	// 	).cookie(
-	// 		'roles',
-	// 		JSON.stringify(userData.user.roles),
-	// 		{
-	// 			maxAge: 7 * 24 * 60 * 60 * 1000,
-	// 			httpOnly: !eval(process.env.HTTPS),
-	// 			secure: eval(process.env.HTTPS),
-	// 			domain: process.env?.DOMAIN ?? ''
-	// 		}
-	// 	)
-	// 		.json(userData)
-	// }
-
 	@Throttle({
 		default: {
 			ttl: 60000,
@@ -203,17 +153,28 @@ export class AuthController {
 			res.json(userData.user)
 		}
 
-	// 	@HttpCode(HttpStatus.OK)
-	// 	@Post('logout')
-	// 	async logout(
-	// 		@Req() req: Request,
-	// 		@Res() res: Response,
-	// 	) {
-	// 		const { refreshToken } = req.cookies
+		@HttpCode(HttpStatus.OK)
+		@Post('logout')
+		async logout(
+			@Req() req: Request,
+			@Res() res: Response,
+		) {
+			const { refreshToken } = req.cookies
 
-	// 		await this.AuthService.logout(refreshToken)
-	// 		res.clearCookie('refreshToken').clearCookie('token').send()
-	// 	}
+			await this.AuthService.logout(refreshToken)
+			res.clearCookie('refreshToken').clearCookie('token').send()
+		}
+
+		@UseGuards(AuthGuard)
+		@HttpCode(HttpStatus.OK)
+		@Post('update')
+		async update(
+			@Body('user') newUser: UserFromClient,
+			@Body('userId') userId: string
+		) {
+			return await this.AuthService.update(newUser, userId)
+		}
+
 
 	// 	@Throttle({
 	// 		default: {
@@ -255,15 +216,6 @@ export class AuthController {
 	// 		).json(userData)
 	// 	}
 
-	// 	@UseGuards(AuthGuard)
-	// 	@HttpCode(HttpStatus.OK)
-	// 	@Post('update')
-	// 	async update(
-	// 		@Body('user') newUser: UserFromClient,
-	// 		@Body('userId') userId: string
-	// 	) {
-	// 		return await this.AuthService.update(newUser, userId)
-	// 	}
 
 	// 	@HttpCode(HttpStatus.OK)
 	// 	@Post('send-reset-link')
