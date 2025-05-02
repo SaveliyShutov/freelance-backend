@@ -12,7 +12,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule)
 
   app.enableCors({ 
-    origin: [process.env.CLIENT_URL],
+    origin: [process.env.CLIENT_URL, 'https://nirby.ru'],
     credentials: true
   })
   app.useGlobalFilters(new HttpExceptionFilter())
