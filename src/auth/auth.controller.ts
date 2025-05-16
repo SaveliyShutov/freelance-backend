@@ -28,7 +28,7 @@ export class AuthController {
 	@Throttle({
 		default: {
 			ttl: 60000,
-			limit: 4,
+			limit: 15,
 			blockDuration: 5 * 60000
 		}
 	})
@@ -64,7 +64,7 @@ export class AuthController {
 				domain: process.env?.DOMAIN ?? ''
 			}
 		)
-		.json(userData)
+			.json(userData)
 	}
 
 	@Throttle({
@@ -105,75 +105,75 @@ export class AuthController {
 				domain: process.env?.DOMAIN ?? ''
 			}
 		)
-		// ).cookie(
-		// 	'current',
-		// 	JSON.stringify(userData.user.role),
-		// 	{
-		// 		maxAge: 7 * 24 * 60 * 60 * 1000,
-		// 		httpOnly: !eval(process.env.HTTPS),
-		// 		secure: eval(process.env.HTTPS),
-		// 		domain: process.env?.DOMAIN ?? ''
-		// 	}
-		// )
+			// ).cookie(
+			// 	'current',
+			// 	JSON.stringify(userData.user.role),
+			// 	{
+			// 		maxAge: 7 * 24 * 60 * 60 * 1000,
+			// 		httpOnly: !eval(process.env.HTTPS),
+			// 		secure: eval(process.env.HTTPS),
+			// 		domain: process.env?.DOMAIN ?? ''
+			// 	}
+			// )
 			.json(userData)
 	}
-		@HttpCode(HttpStatus.OK)
-		@Get('refresh')
-		async refresh(
-			@Req() req: Request,
-			@Res() res: Response,
-		) {
-			const { refreshToken, token } = req.cookies
+	@HttpCode(HttpStatus.OK)
+	@Get('refresh')
+	async refresh(
+		@Req() req: Request,
+		@Res() res: Response,
+	) {
+		const { refreshToken, token } = req.cookies
 
-			// проверить, валиден ещё accessToken
-			// если accessToken не валиден - сделать новый с помощью refreshToken
-			const userData = await this.AuthService.refresh(refreshToken, token)
-			// console.log(JSON.stringify(userData.user.roles));
+		// проверить, валиден ещё accessToken
+		// если accessToken не валиден - сделать новый с помощью refreshToken
+		const userData = await this.AuthService.refresh(refreshToken, token)
+		// console.log(JSON.stringify(userData.user.roles));
 
-			res.cookie(
-				'refreshToken',
-				refreshToken,
-				{
-					maxAge: 30 * 24 * 60 * 60 * 1000,
-					httpOnly: !eval(process.env.HTTPS),
-					secure: eval(process.env.HTTPS),
-					domain: process.env?.DOMAIN ?? ''
-				}
-			)
-			res.cookie(
-				'token',
-				userData.accessToken,
-				{
-					maxAge: 7 * 24 * 60 * 60 * 1000,
-					httpOnly: !eval(process.env.HTTPS),
-					secure: eval(process.env.HTTPS),
-					domain: process.env?.DOMAIN ?? ''
-				}
-			)
-			res.json(userData.user)
-		}
+		res.cookie(
+			'refreshToken',
+			refreshToken,
+			{
+				maxAge: 30 * 24 * 60 * 60 * 1000,
+				httpOnly: !eval(process.env.HTTPS),
+				secure: eval(process.env.HTTPS),
+				domain: process.env?.DOMAIN ?? ''
+			}
+		)
+		res.cookie(
+			'token',
+			userData.accessToken,
+			{
+				maxAge: 7 * 24 * 60 * 60 * 1000,
+				httpOnly: !eval(process.env.HTTPS),
+				secure: eval(process.env.HTTPS),
+				domain: process.env?.DOMAIN ?? ''
+			}
+		)
+		res.json(userData.user)
+	}
 
-		@HttpCode(HttpStatus.OK)
-		@Post('logout')
-		async logout(
-			@Req() req: Request,
-			@Res() res: Response,
-		) {
-			const { refreshToken } = req.cookies
+	@HttpCode(HttpStatus.OK)
+	@Post('logout')
+	async logout(
+		@Req() req: Request,
+		@Res() res: Response,
+	) {
+		const { refreshToken } = req.cookies
 
-			await this.AuthService.logout(refreshToken)
-			res.clearCookie('refreshToken').clearCookie('token').send()
-		}
+		await this.AuthService.logout(refreshToken)
+		res.clearCookie('refreshToken').clearCookie('token').send()
+	}
 
-		@UseGuards(AuthGuard)
-		@HttpCode(HttpStatus.OK)
-		@Post('update')
-		async update(
-			@Body('user') newUser: UserFromClient,
-			@Body('userId') userId: string
-		) {
-			return await this.AuthService.update(newUser, userId)
-		}
+	@UseGuards(AuthGuard)
+	@HttpCode(HttpStatus.OK)
+	@Post('update')
+	async update(
+		@Body('user') newUser: UserFromClient,
+		@Body('userId') userId: string
+	) {
+		return await this.AuthService.update(newUser, userId)
+	}
 
 
 	// 	@Throttle({
