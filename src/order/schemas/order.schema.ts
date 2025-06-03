@@ -44,9 +44,9 @@ export class OrderClass {
   employer_name: string
 
   @Prop({
-    type: String,
+    type: Date,
   })
-  date: string
+  date: Date
 
   @Prop({
     type: String,

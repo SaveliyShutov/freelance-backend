@@ -48,9 +48,9 @@ export class ApplicationClass {
   images: Object;
 
   @Prop({
-    type: String,
+    type: Date,
   })
-  date: string
+  date: Date
 
   @Prop({
     type: String,

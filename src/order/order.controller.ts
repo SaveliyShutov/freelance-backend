@@ -28,7 +28,16 @@ export class OrderController {
   @Get('get-all')
   async getAll(
   ) {
-    return await this.OrderModel.find()
+    const now = new Date();
+
+    const results = await this.OrderModel.find({
+      date: { $gte: now }
+    })
+      .sort({ date: 1 })
+      .limit(100)
+      .exec();
+
+    return results
   }
 
   @UseGuards(AuthGuard)
