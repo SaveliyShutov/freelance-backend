@@ -51,6 +51,11 @@ export class OrderClass {
   @Prop({
     type: String,
   })
+  startTime: string
+
+  @Prop({
+    type: String,
+  })
   address: string
 
   @Prop({
@@ -62,6 +67,9 @@ export class OrderClass {
     type: String,
   })
   hours: string
+
+  @Prop({ type: String, enum: ['hourly', 'shift'], required: true })
+  paymentType: 'hourly' | 'shift';
 }
 
 export const OrderSchema = SchemaFactory.createForClass(OrderClass)

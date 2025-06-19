@@ -4,6 +4,7 @@ export interface Order {
   _id: mongoose.Types.ObjectId
   images?: string[],
   shortDescription: string,
+  startTime: string,
   title: string,
   type: string,
   employer_id?: string, // employer._id
@@ -14,5 +15,6 @@ export interface Order {
   description: string,
   budget: number,
   applications?: []
+  paymentType: 'hourly' | 'shift'
 }
 
