@@ -5,13 +5,13 @@ export interface Order {
   images?: string[],
   shortDescription: string,
   title: string,
-  type: string,
+  type?: string,
   employer_id?: string, // employer._id
   employer_name?: string, // employer.name
   date: string,
   hours: number,
   address: string,
-  description: string,
+  description?: string,
   budget: number,
   applications?: []
 }
