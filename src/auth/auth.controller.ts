@@ -28,7 +28,7 @@ export class AuthController {
 	@Throttle({
 		default: {
 			ttl: 60000,
-			limit: 15,
+			limit: 8,
 			blockDuration: 5 * 60000
 		}
 	})
@@ -70,7 +70,7 @@ export class AuthController {
 	@Throttle({
 		default: {
 			ttl: 60000,
-			limit: 5,
+			limit: 8,
 			blockDuration: 5 * 60000
 		}
 	})

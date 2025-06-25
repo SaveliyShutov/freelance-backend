@@ -26,10 +26,32 @@ export class OrderController {
   ) { }
 
   @Get('get-all')
-  async getAll(
-  ) {
-    return await this.OrderModel.find()
+  async getAll() {
+    const now = new Date();
+
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+
+    const yesterdayStart = new Date(todayStart);
+    yesterdayStart.setDate(todayStart.getDate() - 1);
+
+    const futureAndToday = await this.OrderModel.find({
+      date: { $gte: todayStart }
+    })
+      .sort({ date: 1 })
+      .limit(100)
+      .exec();
+
+    const yesterday = await this.OrderModel.find({
+      date: { $gte: yesterdayStart, $lt: todayStart }
+    })
+      .sort({ date: 1 })
+      .limit(100)
+      .exec();
+
+    return [...futureAndToday, ...yesterday];
   }
+
 
   @UseGuards(AuthGuard)
   @Get('get-by-id')
