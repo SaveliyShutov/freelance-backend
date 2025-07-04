@@ -12,7 +12,7 @@ export interface Order {
   date: Date,
   hours: number,
   address: string,
-  description: string,
+  description?: string,
   budget: number,
   applications?: []
   paymentType: 'hourly' | 'shift'
