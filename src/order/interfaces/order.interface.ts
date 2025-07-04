@@ -6,15 +6,16 @@ export interface Order {
   shortDescription: string,
   startTime: string,
   title: string,
-  type: string,
+  type?: string,
   employer_id?: string, // employer._id
   employer_name?: string, // employer.name
-  date: string,
+  date: Date,
   hours: number,
   address: string,
   description: string,
   budget: number,
   applications?: []
   paymentType: 'hourly' | 'shift'
+  createdAt?: Date;
+  dateType?: 'date' | 'by agreement';
 }
-

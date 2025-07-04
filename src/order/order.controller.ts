@@ -49,7 +49,18 @@ export class OrderController {
       .limit(100)
       .exec();
 
-    return [...futureAndToday, ...yesterday];
+    const vacancies = await this.OrderModel.find({
+      date: null
+    })
+      .sort({ createdAt: -1 })
+      .limit(100)
+      .exec();
+
+    return {
+      futureAndToday,
+      yesterday,
+      vacancies
+    };
   }
 
 

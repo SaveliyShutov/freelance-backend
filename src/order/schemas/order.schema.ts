@@ -70,6 +70,24 @@ export class OrderClass {
 
   @Prop({ type: String, enum: ['hourly', 'shift'], required: true })
   paymentType: 'hourly' | 'shift';
+
+  @Prop({
+    type: String,
+  })
+  type: string;
+
+  @Prop({
+    type: Date,
+    default: () => new Date(),
+  })
+  createdAt: Date;
+
+  @Prop({
+    type: String,
+    enum: ['date', 'by agreement'],
+    required: false,
+  })
+  dateType?: 'date' | 'by agreement';
 }
 
 export const OrderSchema = SchemaFactory.createForClass(OrderClass)
