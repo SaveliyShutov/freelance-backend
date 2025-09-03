@@ -64,7 +64,6 @@ export class OrderController {
   }
 
 
-  @UseGuards(AuthGuard)
   @Get('get-by-id')
   async getById(
     @Query('order_id') order_id: string
