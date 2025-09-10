@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, Up
 import { OrderService } from './order.service';
 import { Order } from 'src/order/interfaces/order.interface';
 import { Application } from 'src/order/interfaces/application.interface';
+import { TelegramService } from '../telegram.service';
 
 
 // all aboout MongoDB
@@ -22,7 +23,8 @@ export class OrderController {
     @InjectModel('Order') private OrderModel: Model<OrderClass>,
     @InjectModel('Application') private ApplicationModel: Model<ApplicationClass>,
     @InjectModel('User') private UserModel: Model<UserClass>,
-    private readonly orderService: OrderService
+    private readonly orderService: OrderService,
+    private readonly telegramService: TelegramService
   ) { }
 
   @Get('get-all')
@@ -112,6 +114,11 @@ export class OrderController {
   ) {
     let orderFromDb = await this.OrderModel.create(order)
     await this.UserModel.findByIdAndUpdate(order.employer_id, { $push: { employer_orders: orderFromDb._id } })
+    await this.telegramService.sendMessage({
+      title: orderFromDb.title,
+      description: orderFromDb.description,
+      _id: orderFromDb._id.toString(),
+    })
 
     return orderFromDb
   }

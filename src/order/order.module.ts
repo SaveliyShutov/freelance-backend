@@ -10,6 +10,8 @@ import UserModel from '../user/models/user.model';
 import AppicationModel from './models/application.model';
 import TokenModel from 'src/token/models/token.model';
 
+import { TelegramService } from '../telegram.service';
+
 @Module({
   imports: [
     OrderModel,
@@ -18,6 +20,6 @@ import TokenModel from 'src/token/models/token.model';
     AppicationModel
   ],
   controllers: [OrderController],
-  providers: [OrderService, TokenService],
+  providers: [OrderService, TokenService, TelegramService],
 })
 export class OrderModule {}
