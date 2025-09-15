@@ -10,7 +10,7 @@ import UserModel from '../user/models/user.model';
 import AppicationModel from './models/application.model';
 import TokenModel from 'src/token/models/token.model';
 
-import { TelegramService } from '../telegram.service';
+import { TelegramService } from './order.telegram.service';
 
 @Module({
   imports: [

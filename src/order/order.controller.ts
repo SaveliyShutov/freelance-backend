@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, Up
 import { OrderService } from './order.service';
 import { Order } from 'src/order/interfaces/order.interface';
 import { Application } from 'src/order/interfaces/application.interface';
-import { TelegramService } from '../telegram.service';
+import { TelegramService } from './order.telegram.service';
 
 
 // all aboout MongoDB
