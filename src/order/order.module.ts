@@ -1,25 +1,27 @@
 import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
 import { OrderService } from './order.service';
 import { OrderController } from './order.controller';
-
 import { TokenService } from 'src/token/token.service';
+import { TelegramService } from './telegram.service';
 
-// mongo models
-import OrderModel from './models/order.model';
-import UserModel from '../user/models/user.model';
-import AppicationModel from './models/application.model';
-import TokenModel from 'src/token/models/token.model';
-
-import { TelegramService } from '../telegram.service';
+// mongo schemas
+import { OrderSchema } from './schemas/order.schema';
+import { ApplicationSchema } from './schemas/application.schema';
+import { UserSchema } from '../user/schemas/user.schema';
+import { TokenSchema } from 'src/token/schemas/token.schema';
 
 @Module({
   imports: [
-    OrderModel,
-    UserModel,
-    TokenModel,
-    AppicationModel
+    MongooseModule.forFeature([
+      { name: 'Order', schema: OrderSchema },
+      { name: 'Application', schema: ApplicationSchema },
+      { name: 'User', schema: UserSchema },
+      { name: 'Token', schema: TokenSchema },
+    ]),
   ],
   controllers: [OrderController],
   providers: [OrderService, TokenService, TelegramService],
+  exports: [OrderService, TelegramService],
 })
 export class OrderModule {}

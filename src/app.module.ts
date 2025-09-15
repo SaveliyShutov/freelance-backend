@@ -14,8 +14,6 @@ import { S3Module } from './s3/s3.module';
 import { MailModule } from './mail/mail.module';
 import { APP_GUARD } from '@nestjs/core'
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler'
-import { TelegramService } from './telegram.service';
-
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { OrderModule } from './order/order.module';
@@ -55,7 +53,6 @@ import { OrderModule } from './order/order.module';
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard
-    },
-    TelegramService],
+    }],
 })
 export class AppModule { }
