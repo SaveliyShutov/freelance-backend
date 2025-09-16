@@ -114,11 +114,11 @@ export class OrderController {
   ) {
     let orderFromDb = await this.OrderModel.create(order)
     await this.UserModel.findByIdAndUpdate(order.employer_id, { $push: { employer_orders: orderFromDb._id } })
-    await this.telegramService.sendMessage({
-      title: orderFromDb.title,
-      description: orderFromDb.description,
-      _id: orderFromDb._id.toString(),
-    })
+    // await this.telegramService.sendMessage({
+    //   title: orderFromDb.title,
+    //   description: orderFromDb.description,
+    //   _id: orderFromDb._id.toString(),
+    // })
 
     return orderFromDb
   }
