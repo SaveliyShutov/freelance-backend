@@ -5,6 +5,7 @@ export interface UserFromClient {
   password: string
   employer_avatar?: string,
   employer_name?: string,
+  employer_surname?: string,
   employer_shortDescription?: string,
   employer_description?: string,
   employer_address?: string,
