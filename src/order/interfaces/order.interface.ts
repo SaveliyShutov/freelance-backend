@@ -15,7 +15,7 @@ export interface Order {
   description?: string,
   budget: number,
   applications?: []
-  paymentType: 'hourly' | 'shift'
+  paymentType: 'hourly' | 'shift' | 'deal',
   createdAt?: Date;
   dateType?: 'date' | 'by agreement';
 }

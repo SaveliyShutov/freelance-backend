@@ -68,8 +68,8 @@ export class OrderClass {
   })
   hours: string
 
-  @Prop({ type: String, enum: ['hourly', 'shift'], required: true })
-  paymentType: 'hourly' | 'shift';
+  @Prop({ type: String, enum: ['hourly', 'shift', 'deal'], required: true })
+  paymentType: 'hourly' | 'shift' | 'deal';
 
   @Prop({
     type: String,
