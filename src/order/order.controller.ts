@@ -2,8 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, Up
 import { OrderService } from './order.service';
 import { Order } from 'src/order/interfaces/order.interface';
 import { Application } from 'src/order/interfaces/application.interface';
-import { TelegramService } from './telegram.service';
-
+import axios from 'axios';
 
 // all aboout MongoDB
 import { InjectModel } from '@nestjs/mongoose';
@@ -24,7 +23,7 @@ export class OrderController {
     @InjectModel('Application') private ApplicationModel: Model<ApplicationClass>,
     @InjectModel('User') private UserModel: Model<UserClass>,
     private readonly orderService: OrderService,
-    private readonly telegramService: TelegramService
+    // private readonly vkService: VkService
   ) { }
 
   @Get('get-all')
@@ -114,12 +113,20 @@ export class OrderController {
   ) {
     let orderFromDb = await this.OrderModel.create(order)
     await this.UserModel.findByIdAndUpdate(order.employer_id, { $push: { employer_orders: orderFromDb._id } })
-    // await this.telegramService.sendMessage({
-    //   title: orderFromDb.title,
-    //   description: orderFromDb.description,
-    //   _id: orderFromDb._id.toString(),
-    // })
-
+    const botUrl = process.env.BOTSERVICE_URL;
+    if (botUrl) {
+      axios.post(botUrl, {
+        title: orderFromDb.title,
+        description: orderFromDb.description,
+        date: orderFromDb.date,
+        address: orderFromDb.address,
+        budget: orderFromDb.budget,
+      })
+        .then(() => console.log('✅ Заказ отправлен в botservice'))
+        .catch(err => console.error('❌ Ошибка при запросе к botservice:', err.message));
+    } else {
+      console.warn('⚠️ BOTSERVICE_URL не задан в .env');
+    }
     return orderFromDb
   }
 

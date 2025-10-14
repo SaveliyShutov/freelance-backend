@@ -3,7 +3,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { OrderService } from './order.service';
 import { OrderController } from './order.controller';
 import { TokenService } from 'src/token/token.service';
-import { TelegramService } from './telegram.service';
+import { BotService } from './telegram.service';
+// import { VkService } from './vk.service';
 
 // mongo schemas
 import { OrderSchema } from './schemas/order.schema';
@@ -21,7 +22,7 @@ import { TokenSchema } from 'src/token/schemas/token.schema';
     ]),
   ],
   controllers: [OrderController],
-  providers: [OrderService, TokenService, TelegramService],
-  exports: [OrderService, TelegramService],
+  providers: [OrderService, TokenService, BotService],
+  exports: [OrderService, BotService],
 })
 export class OrderModule {}
