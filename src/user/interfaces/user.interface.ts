@@ -6,6 +6,7 @@ export interface User {
 	email: string
 	employer_avatar?: string,
 	employer_name?: string,
+	employer_surname?: string,
   employer_shortDescription?: string,
   employer_description?: string,
   employer_rating?: string,
