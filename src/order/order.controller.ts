@@ -121,6 +121,11 @@ export class OrderController {
         date: orderFromDb.date,
         address: orderFromDb.address,
         budget: orderFromDb.budget,
+        startTime: orderFromDb.startTime,
+        hours: orderFromDb.hours,
+        paymentType: orderFromDb.paymentType,
+        dateType: orderFromDb.dateType,
+        employerName: orderFromDb.employer_name
       })
         .then(() => console.log('✅ Заказ отправлен в botservice'))
         .catch(err => console.error('❌ Ошибка при запросе к botservice:', err.message));
@@ -129,6 +134,41 @@ export class OrderController {
     }
     return orderFromDb
   }
+
+  @Post('create-from-bot')
+  async createOrderFromBot(@Body('order') order: Order) {
+    try {
+      const orderFromDb = await this.OrderModel.create(order);
+
+      // Если хочешь, можешь сразу дергать UserModel или триггерить рассылку
+      await this.UserModel.findByIdAndUpdate(order.employer_id, {
+        $push: { employer_orders: orderFromDb._id }
+      }).catch(() => null);
+
+      // А тут вызываем твою логику рассылки
+      const botUrl = process.env.BOTSERVICE_URL;
+      if (botUrl) {
+        axios.post(botUrl + '/botservice/send', {
+          title: orderFromDb.title,
+          description: orderFromDb.description,
+          date: orderFromDb.date,
+          address: orderFromDb.address,
+          budget: orderFromDb.budget,
+          startTime: orderFromDb.startTime,
+          hours: orderFromDb.hours,
+          paymentType: orderFromDb.paymentType,
+          dateType: orderFromDb.dateType,
+          employerName: orderFromDb.employer_name,
+        }).catch(err => console.error('⚠️ Ошибка при рассылке:', err.message));
+      }
+
+      return { success: true, order: orderFromDb };
+    } catch (err) {
+      console.error('❌ Ошибка при создании ордера ботом:', err.message);
+      return { success: false, error: err.message };
+    }
+  }
+
 
   @UseGuards(AuthGuard)
   @Post('create-application')

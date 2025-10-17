@@ -7,8 +7,8 @@ export interface Order {
   startTime: string,
   title: string,
   type?: string,
-  employer_id?: string, // employer._id
-  employer_name?: string, // employer.name
+  employer_id?: string,
+  employer_name?: string,
   date: Date,
   hours: number,
   address: string,
