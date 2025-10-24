@@ -7,12 +7,11 @@ import { HttpExceptionFilter } from './exceptions/http-exception.filter';
 // Load environment variables at the very beginning
 
 import * as cookieParser from 'cookie-parser';
-console.log(process.env.PORT)
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
 
   app.enableCors({ 
-    origin: [process.env.CLIENT_URL, 'https://nirby.ru'],
+    origin: [process.env.CLIENT_URL, process.env.ADMIN_URL, process.env.SITE_URL],
     credentials: true
   })
   app.useGlobalFilters(new HttpExceptionFilter())

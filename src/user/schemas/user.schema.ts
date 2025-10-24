@@ -124,8 +124,11 @@ export class UserClass {
   })
   worker_rating: string;
 
-
-
+  @Prop({
+    type: Boolean,
+    required: false,
+  })
+  is_admin: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(UserClass);

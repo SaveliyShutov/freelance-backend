@@ -2,8 +2,6 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, Up
 import { OrderService } from './order.service';
 import { Order } from 'src/order/interfaces/order.interface';
 import { Application } from 'src/order/interfaces/application.interface';
-import { TelegramService } from './telegram.service';
-
 
 // all aboout MongoDB
 import { InjectModel } from '@nestjs/mongoose';
@@ -24,7 +22,6 @@ export class OrderController {
     @InjectModel('Application') private ApplicationModel: Model<ApplicationClass>,
     @InjectModel('User') private UserModel: Model<UserClass>,
     private readonly orderService: OrderService,
-    private readonly telegramService: TelegramService
   ) { }
 
   @Get('get-all')
@@ -75,21 +72,6 @@ export class OrderController {
     } catch (error) {
       return error
     }
-  }
-
-  @UseGuards(AuthGuard)
-  @Post('get-orders-with-lesson')
-  async getOrdersWithApplications(@Body('userOrders') userOrders: string[]) {
-    return await this.OrderModel.find({ _id: { $in: userOrders } })
-      .populate({
-        path: 'applications',
-        // select: {
-        //   images: 1,
-        //   name: 1,
-        //   shortDescription: 1,
-        //   course: 1,
-        // },
-      })
   }
 
   @UseGuards(AuthGuard)
@@ -170,43 +152,4 @@ export class OrderController {
 
     // return applicationFromDb
   }
-
-  // @Post('add-user-to-course')
-  // async addUserToCourse(
-  //   @Body('courseId') courseId: string,
-  //   @Body('userId') userId: string
-  // ) {
-  //   let result = await this.CourseModel.findByIdAndUpdate(courseId, { $push: { students: userId } })
-  //   if (result) {
-  //     return await this.UserModel.findByIdAndUpdate(userId, { $push: { myCourses: courseId } })
-  //   }
-  //   return;
-  // }
-
-  // @Post('images')
-  // @UseInterceptors(AnyFilesInterceptor())
-  // async uploadFile(
-  //   @UploadedFiles() files: Array<Express.Multer.File>,
-  //   @Query('course_id') course_id: String,
-  // ) {
-  //   let filenames = [];
-
-  //   for (let file of files) {
-  //     if (file.originalname.startsWith('logo')) {
-  //       file.buffer = await sharp(file.buffer).resize(300, 300).toBuffer()
-  //     }
-  //     let uploadResult = await YaCloud.Upload({
-  //       file,
-  //       path: 'courses',
-  //       fileName: file.originalname,
-  //     });
-  //     filenames.push(uploadResult.Location);
-  //   }
-  //   let setObj = {};
-  //   if (filenames[0]) { setObj['images.logo'] = filenames[0] };
-
-  //   return await this.CourseModel.findByIdAndUpdate(course_id, {
-  //     $set: setObj,
-  //   });
-  // }
 }

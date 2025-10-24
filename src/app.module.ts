@@ -9,14 +9,12 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { TokenModule } from './token/token.module';
 import { UserModule } from './user/user.module';
-import { RolesModule } from './roles/roles.module';
-import { S3Module } from './s3/s3.module';
-import { MailModule } from './mail/mail.module';
 import { APP_GUARD } from '@nestjs/core'
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler'
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { OrderModule } from './order/order.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -44,9 +42,7 @@ import { OrderModule } from './order/order.module';
     TokenModule,
     OrderModule,
     UserModule,
-    RolesModule,
-    S3Module,
-    MailModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService,

@@ -25,4 +25,8 @@ export default class ApiError extends HttpException {
 	static NotFound(message: string | null = null) {
 		return new ApiError(HttpStatus.NOT_FOUND, message ?? 'Не найдено')
 	}
+
+	static ForbiddenError(message: string | null = null) {
+		return new ApiError(HttpStatus.NOT_FOUND, message ?? 'Не найдено')
+	}
 }

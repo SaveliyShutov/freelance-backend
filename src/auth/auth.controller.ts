@@ -1,16 +1,10 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res, UseGuards, UploadedFiles, UseInterceptors, Query } from '@nestjs/common'
-import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { Request, Response } from 'express';
 import { User } from 'src/user/interfaces/user.interface';
 import { AuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
-import { MailService } from 'src/mail/mail.service';
 import { Throttle } from '@nestjs/throttler';
 import { UserFromClient } from 'src/user/interfaces/user-from-client.interface';
-
-
-import YaCloud from 'src/s3/bucket';
-import * as sharp from "sharp";
 
 // all about MongoDB
 import { InjectModel } from '@nestjs/mongoose';
@@ -105,18 +99,50 @@ export class AuthController {
 				domain: process.env?.DOMAIN ?? ''
 			}
 		)
-			// ).cookie(
-			// 	'current',
-			// 	JSON.stringify(userData.user.role),
-			// 	{
-			// 		maxAge: 7 * 24 * 60 * 60 * 1000,
-			// 		httpOnly: !eval(process.env.HTTPS),
-			// 		secure: eval(process.env.HTTPS),
-			// 		domain: process.env?.DOMAIN ?? ''
-			// 	}
-			// )
 			.json(userData)
 	}
+
+	@Throttle({
+		default: {
+			ttl: 60000,
+			limit: 8,
+			blockDuration: 5 * 60000
+		}
+	})
+	@HttpCode(HttpStatus.OK)
+	@Post('login-admin')
+	async loginAdmin(
+		@Res({ passthrough: true }) res: Response,
+		@Body('email') email: string,
+		@Body('password') password: string
+	) {
+		const userData = await this.AuthService.loginAdmin(email, password)
+
+		let refreshToken = userData.refreshToken
+		delete userData.refreshToken
+
+		res.cookie(
+			'refreshToken',
+			refreshToken,
+			{
+				maxAge: 30 * 24 * 60 * 60 * 1000,
+				httpOnly: !eval(process.env.HTTPS),
+				secure: eval(process.env.HTTPS),
+				domain: process.env?.DOMAIN ?? ''
+			}
+		).cookie(
+			'token',
+			userData.accessToken,
+			{
+				maxAge: 7 * 24 * 60 * 60 * 1000,
+				httpOnly: !eval(process.env.HTTPS),
+				secure: eval(process.env.HTTPS),
+				domain: process.env?.DOMAIN ?? ''
+			}
+		)
+			.json(userData)
+	}
+
 	@HttpCode(HttpStatus.OK)
 	@Get('refresh')
 	async refresh(

@@ -5,9 +5,7 @@ import ApiError from 'src/exceptions/errors/api-error'
 import { InjectModel } from '@nestjs/mongoose'
 import { UserClass } from 'src/user/schemas/user.schema'
 import { User } from 'src/user/interfaces/user.interface'
-import { RolesService } from 'src/roles/roles.service'
 import * as bcrypt from 'bcryptjs'
-import { MailService } from 'src/mail/mail.service'
 import { workerData } from 'worker_threads'
 import { UserFromClient } from 'src/user/interfaces/user-from-client.interface';
 
@@ -16,7 +14,6 @@ export class AuthService {
   constructor(
     @InjectModel('User') private UserModel: Model<UserClass>,
     private TokenService: TokenService,
-    private mailService: MailService,
   ) { }
 
   async registration(user: UserFromClient | User) {
@@ -64,6 +61,45 @@ export class AuthService {
       user,
     }
   }
+
+  async loginAdmin(email: string, password: string) {
+    if (email !== process.env.ADMIN_EMAIL) {
+      throw ApiError.BadRequest('Пользователь с таким email не найден')
+    }
+
+    const isPassValid = (password === process.env.ADMIN_PASS)
+    if (!isPassValid) {
+      throw ApiError.BadRequest('Неверный пароль')
+    }
+
+    let user = await this.UserModel.findOne({ email })
+    if (!user) {
+      const hashed = await bcrypt.hash(password, 3)
+      user = await this.UserModel.create({
+        email,
+        password: hashed,
+        is_admin: true
+      })
+    }
+
+    if (!user.password || user.password.length < 8) {
+      throw ApiError.BadRequest('Некорректное состояние пароля в базе')
+    }
+
+    const tokens = this.TokenService.generateTokens({
+      _id: user._id,
+      password: user.password
+    })
+
+    await this.TokenService.saveToken(tokens.refreshToken)
+
+    return {
+      ...tokens,
+      user
+    }
+  }
+
+
 
   async refresh(refreshToken: string, accessToken: string) {
     let userData: any; // jwt payload

@@ -1,16 +1,16 @@
 import mongoose from "mongoose"
 
 export interface User {
-  _id: mongoose.Types.ObjectId
+	_id: mongoose.Types.ObjectId
 	password: string
 	email: string
 	employer_avatar?: string,
 	employer_name?: string,
 	employer_surname?: string,
-  employer_shortDescription?: string,
-  employer_description?: string,
-  employer_rating?: string,
-  employer_reviews?: [],
+	employer_shortDescription?: string,
+	employer_description?: string,
+	employer_rating?: string,
+	employer_reviews?: [],
 	employer_orders?: [],
 	employer_address?: string,
 	employer_contacts?: string,
@@ -23,4 +23,5 @@ export interface User {
 	worker_address?: string,
 	worker_phone?: string,
 	worker_rating?: string,
+	is_admin?: boolean,
 }

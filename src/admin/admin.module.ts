@@ -1,11 +1,10 @@
 import { Module } from '@nestjs/common';
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
+import { AdminController } from './admin.controller';
+import { AdminService } from './admin.service';
 import { TokenModule } from 'src/token/token.module';
+import { AdminGuard } from './admin.guard';
 
 import { JwtModule } from '@nestjs/jwt';
-
-// mongodb
 import UserModel from 'src/user/models/user.model';
 
 
@@ -15,7 +14,7 @@ import UserModel from 'src/user/models/user.model';
     JwtModule,
     UserModel,
   ],
-  controllers: [AuthController],
-  providers: [AuthService]
+  controllers: [AdminController],
+  providers: [AdminService, AdminGuard]
 })
-export class AuthModule { }
+export class AdminModule {}
