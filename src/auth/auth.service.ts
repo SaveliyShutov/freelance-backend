@@ -6,7 +6,6 @@ import { InjectModel } from '@nestjs/mongoose'
 import { UserClass } from 'src/user/schemas/user.schema'
 import { User } from 'src/user/interfaces/user.interface'
 import * as bcrypt from 'bcryptjs'
-import { workerData } from 'worker_threads'
 import { UserFromClient } from 'src/user/interfaces/user-from-client.interface';
 
 @Injectable()
@@ -102,10 +101,9 @@ export class AuthService {
 
 
   async refresh(refreshToken: string, accessToken: string) {
-    let userData: any; // jwt payload
-    let user: any; // object to return
+    let userData: any;
+    let user: any;
 
-    // проверить, валиден ли ещё accessToken
     userData = this.TokenService.validateAccessToken(accessToken)
 
     if (userData != null) {
@@ -117,16 +115,13 @@ export class AuthService {
         user: user
       }
     }
-    // если accessToken не валиден - пройти авторизацию с refreshToken и создать новый accessToken
 
-    // если нет refreshToken выкидываем пользователя
     if (!refreshToken) {
       throw ApiError.UnauthorizedError()
     }
 
     userData = this.TokenService.validateRefreshToken(refreshToken)
     const tokenFromDb = await this.TokenService.findToken(refreshToken)
-    // если refreshToken сдох, то выкидываем пользователя
     if (!userData || !tokenFromDb) {
       throw ApiError.UnauthorizedError()
     }
@@ -136,8 +131,7 @@ export class AuthService {
     if (userData.password !== user.password) {
       throw ApiError.AccessDenied('Аутентификация провалена. Пароль изменен')
     }
-    // new accessToken, чтобы пользователь мог зайти в
-    // систему ближайшие 15 минут без использоватния refreshToken
+
     const newAccessToken = this.TokenService.generateAccessToken({ _id: user._id, password: user.password })
 
     return {
@@ -146,54 +140,6 @@ export class AuthService {
       user: user
     }
   }
-
-  // async validateEnterToResetPassword(user_id: any, token: string) {
-  //   let candidate = await this.UserModel.findById(user_id)
-
-  //   if (!candidate._id) throw ApiError.BadRequest('Пользователь с таким _id не найден')
-
-  //   let secret = process.env.JWT_RESET_SECRET + candidate.password
-
-  //   let result = this.TokenService.validateResetToken(token, secret)
-
-  //   if (!result) throw ApiError.AccessDenied()
-
-  //   return result
-  // }
-
-  // async resetPassword(password: string, token: string, userId: string) {
-  //   try {
-  //     await this.validateEnterToResetPassword(userId, token)
-
-  //     const hashPassword = await bcrypt.hash(password, 3)
-  //     const user = await this.UserModel.findByIdAndUpdate(userId, { password: hashPassword })
-
-  //     const tokens = this.TokenService.generateTokens({ _id: user._id, password: user.password })
-  //     await this.TokenService.saveToken(tokens.refreshToken)
-
-  //     return {
-  //       ...tokens,
-  //       user: user
-  //     }
-  //   } catch (error) {
-  //     return null
-  //   }
-  // }
-
-  // async sendResetLink(email: string) {
-  //   let candidate = await this.UserModel.findOne({ email })
-  //   if (!candidate)
-  //     throw ApiError.BadRequest('Пользователь с таким email не найден')
-
-  //   const secret = process.env.JWT_RESET_SECRET + candidate.password
-  //   const token = this.TokenService.createResetToken({ _id: candidate._id, password: candidate.password }, secret)
-
-  //   const link = process.env.CLIENT_URL + `/forgot-password?user_id=${candidate._id}&token=${token}`
-
-  //   await this.mailService.sendResetLink(link, email)
-
-  //   return link
-  // }
 
   async logout(refreshToken: string) {
     return await this.TokenService.removeToken(refreshToken)
@@ -205,8 +151,4 @@ export class AuthService {
       runValidators: true
     })
   }
-
-  // async getAllUsers() {
-  //   return await this.UserModel.find({}).populate('myCourses')
-  // }
 }

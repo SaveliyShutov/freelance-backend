@@ -7,8 +7,8 @@ export interface Application {
   initials: string,
   worker: string,
   order: string,
-  employer: mongoose.Types.ObjectId, // employer._id
-  status?: string, // на рассмотрении, подтверждено, отказ
+  employer: mongoose.Types.ObjectId,
+  status?: string,
   images?: string[],
   date?: string,
   rating?: string,

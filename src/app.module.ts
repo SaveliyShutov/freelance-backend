@@ -21,7 +21,7 @@ import { AdminModule } from './admin/admin.module';
     ServeStaticModule.forRoot(
       {
         rootPath: join(__dirname, '..', 'public'),
-        serveRoot: '/static/', // This is the route you will use to access your files 
+        serveRoot: '/static/',
       }
     ),
     ThrottlerModule.forRoot([{

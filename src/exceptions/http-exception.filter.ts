@@ -8,9 +8,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp()
     const res = ctx.getResponse<Response>()
 
-    // if (dev)
-    // console.log(exception)
-
     if (exception.getStatus() === 500)
       return res.status(500).json({ message: 'Непредвиденная ошибка' })
 

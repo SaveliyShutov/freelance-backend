@@ -1,6 +1,5 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res, UseGuards, UploadedFiles, UseInterceptors, Query } from '@nestjs/common'
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res, UseGuards} from '@nestjs/common'
 import { Request, Response } from 'express';
-import { User } from 'src/user/interfaces/user.interface';
 import { AuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
 import { Throttle } from '@nestjs/throttler';
@@ -200,87 +199,4 @@ export class AuthController {
 	) {
 		return await this.AuthService.update(newUser, userId)
 	}
-
-
-	// 	@Throttle({
-	// 		default: {
-	// 			ttl: 60000,
-	// 			limit: 4,
-	// 			blockDuration: 5 * 60000
-	// 		}
-	// 	})
-	// 	@Post('reset-password')
-	// 	async resetPassword(
-	// 		@Res() res: Response,
-	// 		@Body('password') password: string,
-	// 		@Body('token') token: string,
-	// 		@Body('userId') userId: string
-	// 	) {
-	// 		const userData = await this.AuthService.resetPassword(password, token, userId)
-
-	// 		let refreshToken = userData.refreshToken
-	// 		delete userData.refreshToken
-
-	// 		res.cookie(
-	// 			'refreshToken',
-	// 			refreshToken,
-	// 			{
-	// 				maxAge: 30 * 24 * 60 * 60 * 1000,
-	// 				httpOnly: !eval(process.env.HTTPS),
-	// 				secure: eval(process.env.HTTPS),
-	// 				domain: process.env?.DOMAIN ?? ''
-	// 			}
-	// 		).cookie(
-	// 			'token',
-	// 			userData.accessToken,
-	// 			{
-	// 				maxAge: 7 * 24 * 60 * 60 * 1000,
-	// 				httpOnly: !eval(process.env.HTTPS),
-	// 				secure: eval(process.env.HTTPS),
-	// 				domain: process.env?.DOMAIN ?? ''
-	// 			}
-	// 		).json(userData)
-	// 	}
-
-
-	// 	@HttpCode(HttpStatus.OK)
-	// 	@Post('send-reset-link')
-	// 	async sendResetLink(
-	// 		@Body('email') email: string
-	// 	) {
-	// 		let link = await this.AuthService.sendResetLink(email)
-	// 		return link
-	// 	}
-
-	// 	@HttpCode(HttpStatus.OK)
-	// 	@Get('get-all-users')
-	// 	async getAllUsers(
-	// 	) {
-	// 		return await this.AuthService.getAllUsers()
-	// 	}
-
-	// 	@Post('upload-avatar')
-	// 	@UseInterceptors(AnyFilesInterceptor())
-	// 	async uploadAvatar(
-	// 		@UploadedFiles() files: Array<Express.Multer.File>,
-	// 		@Query('user_id') userId: String,
-	// 	) {
-	// 		let filenames = [];
-
-	// 		for (let file of files) {
-	// 			if (file.originalname.startsWith('avatar')) {
-	// 				file.buffer = await sharp(file.buffer).resize(300, 300).toBuffer()
-	// 			}
-	// 			let uploadResult = await YaCloud.Upload({
-	// 				file,
-	// 				path: 'avatars',
-	// 				fileName: file.originalname,
-	// 			});
-	// 			filenames.push(uploadResult.Location);
-	// 		}
-
-	// 		if (filenames.length == 0) return
-
-	// 		return await this.UserModel.findByIdAndUpdate(userId, { $set: { avatars: [filenames[0]] } });
-	// 	}
 }

@@ -1,10 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Query, } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { Order } from 'src/order/interfaces/order.interface';
 import { Application } from 'src/order/interfaces/application.interface';
 import axios from 'axios';
 
-// all aboout MongoDB
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
@@ -81,12 +80,6 @@ export class OrderController {
     return await this.ApplicationModel.find({ _id: { $in: userApplications } })
       .populate({
         path: 'order',
-        // select: {
-        //   images: 1,
-        //   name: 1,
-        //   shortDescription: 1,
-        //   course: 1,
-        // },
       })
   }
 
@@ -124,12 +117,10 @@ export class OrderController {
     try {
       const orderFromDb = await this.OrderModel.create(order);
 
-      // Если хочешь, можешь сразу дергать UserModel или триггерить рассылку
       await this.UserModel.findByIdAndUpdate(order.employer_id, {
         $push: { employer_orders: orderFromDb._id }
       }).catch(() => null);
 
-      // А тут вызываем твою логику рассылки
       const botUrl = process.env.BOTSERVICE_URL;
       if (botUrl) {
         axios.post(botUrl + '/botservice/send', {

@@ -4,7 +4,6 @@ import { OrderService } from './order.service';
 import { OrderController } from './order.controller';
 import { TokenService } from 'src/token/token.service';
 
-// mongo schemas
 import { OrderSchema } from './schemas/order.schema';
 import { ApplicationSchema } from './schemas/application.schema';
 import { UserSchema } from '../user/schemas/user.schema';
