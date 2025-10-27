@@ -116,10 +116,12 @@ export class OrderController {
   async createOrderFromBot(@Body('order') order: Order) {
     try {
       const orderFromDb = await this.OrderModel.create(order);
+      console.log('контрольная точка 1');
 
       await this.UserModel.findByIdAndUpdate(order.employer_id, {
         $push: { employer_orders: orderFromDb._id }
       }).catch(() => null);
+      console.log('контрольная точка 2');
 
       const botUrl = process.env.BOTSERVICE_URL;
       if (botUrl) {
