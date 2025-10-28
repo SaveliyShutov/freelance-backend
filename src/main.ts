@@ -9,7 +9,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule)
 
   app.enableCors({ 
-    origin: [process.env.CLIENT_URL, process.env.ADMIN_URL, process.env.SITE_URL],
+    origin: [process.env.CLIENT_URL, process.env.ADMIN_URL, process.env.SITE_URL, process.env.BOT_URL],
     credentials: true
   })
   app.useGlobalFilters(new HttpExceptionFilter())
