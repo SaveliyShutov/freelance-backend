@@ -107,7 +107,7 @@ export class OrderController {
         .then(() => console.log('✅ Заказ отправлен в botservice'))
         .catch(err => console.error('❌ Ошибка при запросе к botservice:', err.message));
     } else {
-      console.warn('⚠️ BOTSERVICE_URL не задан в .env');
+      console.warn('⚠️ BOT_URL не задан в .env');
     }
     return orderFromDb
   }
@@ -116,14 +116,12 @@ export class OrderController {
   async createOrderFromBot(@Body('order') order: Order) {
     try {
       const orderFromDb = await this.OrderModel.create(order);
-      console.log('контрольная точка 1');
 
       await this.UserModel.findByIdAndUpdate(order.employer_id, {
         $push: { employer_orders: orderFromDb._id }
       }).catch(() => null);
-      console.log('контрольная точка 2');
 
-      const botUrl = process.env.BOTSERVICE_URL;
+      const botUrl = process.env.BOT_URL;
       if (botUrl) {
         axios.post(botUrl + '/botservice/send', {
           title: orderFromDb.title,
