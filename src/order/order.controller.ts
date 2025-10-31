@@ -90,7 +90,7 @@ export class OrderController {
   ) {
     let orderFromDb = await this.OrderModel.create(order)
     await this.UserModel.findByIdAndUpdate(order.employer_id, { $push: { employer_orders: orderFromDb._id } })
-    const botUrl = process.env.BOT_URL;
+    const botUrl = process.env.BOT_URL + '/botservice/send';
     if (botUrl) {
       axios.post(botUrl, {
         title: orderFromDb.title,
