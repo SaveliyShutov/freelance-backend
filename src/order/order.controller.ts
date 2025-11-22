@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, UseGuards, Query, } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Query } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { Order } from 'src/order/interfaces/order.interface';
 import { Application } from 'src/order/interfaces/application.interface';
@@ -19,10 +19,11 @@ import { AuthGuard } from 'src/auth/auth.guard';
 export class OrderController {
   constructor(
     @InjectModel('Order') private OrderModel: Model<OrderClass>,
-    @InjectModel('Application') private ApplicationModel: Model<ApplicationClass>,
+    @InjectModel('Application')
+    private ApplicationModel: Model<ApplicationClass>,
     @InjectModel('User') private UserModel: Model<UserClass>,
     private readonly orderService: OrderService,
-  ) { }
+  ) {}
 
   @Get('get-all')
   async getAll() {
@@ -35,21 +36,21 @@ export class OrderController {
     yesterdayStart.setDate(todayStart.getDate() - 1);
 
     const futureAndToday = await this.OrderModel.find({
-      date: { $gte: todayStart }
+      date: { $gte: todayStart },
     })
       .sort({ date: 1 })
       .limit(100)
       .exec();
 
     const yesterday = await this.OrderModel.find({
-      date: { $gte: yesterdayStart, $lt: todayStart }
+      date: { $gte: yesterdayStart, $lt: todayStart },
     })
       .sort({ date: 1 })
       .limit(100)
       .exec();
 
     const vacancies = await this.OrderModel.find({
-      date: null
+      date: null,
     })
       .sort({ createdAt: -1 })
       .limit(100)
@@ -58,72 +59,42 @@ export class OrderController {
     return {
       futureAndToday,
       yesterday,
-      vacancies
+      vacancies,
     };
   }
 
-
   @Get('get-by-id')
-  async getById(
-    @Query('order_id') order_id: string
-  ) {
+  async getById(@Query('order_id') order_id: string) {
     try {
-      return await this.OrderModel.findById(order_id)
+      return await this.OrderModel.findById(order_id);
     } catch (error) {
-      return error
+      return error;
     }
   }
 
   @UseGuards(AuthGuard)
   @Post('get-applications-with-orders')
-  async getApplicationsWithOrders(@Body('userApplications') userApplications: string[]) {
-    return await this.ApplicationModel.find({ _id: { $in: userApplications } })
-      .populate({
-        path: 'order',
-      })
+  async getApplicationsWithOrders(
+    @Body('userApplications') userApplications: string[],
+  ) {
+    return await this.ApplicationModel.find({
+      _id: { $in: userApplications },
+    }).populate({
+      path: 'order',
+    });
   }
 
   @UseGuards(AuthGuard)
   @Post('create')
-  async createOrder(
-    @Body('order') order: Order
-  ) {
-    let orderFromDb = await this.OrderModel.create(order)
-    await this.UserModel.findByIdAndUpdate(order.employer_id, { $push: { employer_orders: orderFromDb._id } })
+  async createOrder(@Body('order') order: Order) {
+    const orderFromDb = await this.OrderModel.create(order);
+    await this.UserModel.findByIdAndUpdate(order.employer_id, {
+      $push: { employer_orders: orderFromDb._id },
+    });
     const botUrl = process.env.BOT_URL + '/botservice/send';
     if (botUrl) {
-      axios.post(botUrl, {
-        title: orderFromDb.title,
-        description: orderFromDb.description,
-        date: orderFromDb.date,
-        address: orderFromDb.address,
-        budget: orderFromDb.budget,
-        startTime: orderFromDb.startTime,
-        hours: orderFromDb.hours,
-        paymentType: orderFromDb.paymentType,
-        dateType: orderFromDb.dateType,
-        employerName: orderFromDb.employer_name
-      })
-        .then(() => console.log('✅ Заказ отправлен в botservice'))
-        .catch(err => console.error('❌ Ошибка при запросе к botservice:', err.message));
-    } else {
-      console.warn('⚠️ BOT_URL не задан в .env');
-    }
-    return orderFromDb
-  }
-
-  @Post('create-from-bot')
-  async createOrderFromBot(@Body('order') order: Order) {
-    try {
-      const orderFromDb = await this.OrderModel.create(order);
-
-      await this.UserModel.findByIdAndUpdate(order.employer_id, {
-        $push: { employer_orders: orderFromDb._id }
-      }).catch(() => null);
-
-      const botUrl = process.env.BOT_URL;
-      if (botUrl) {
-        axios.post(botUrl + '/botservice/send', {
+      axios
+        .post(botUrl, {
           title: orderFromDb.title,
           description: orderFromDb.description,
           date: orderFromDb.date,
@@ -134,7 +105,44 @@ export class OrderController {
           paymentType: orderFromDb.paymentType,
           dateType: orderFromDb.dateType,
           employerName: orderFromDb.employer_name,
-        }).catch(err => console.error('⚠️ Ошибка при рассылке:', err.message));
+        })
+        .then(() => console.log('✅ Заказ отправлен в botservice'))
+        .catch((err) =>
+          console.error('❌ Ошибка при запросе к botservice:', err.message),
+        );
+    } else {
+      console.warn('⚠️ BOT_URL не задан в .env');
+    }
+    return orderFromDb;
+  }
+
+  @Post('create-from-bot')
+  async createOrderFromBot(@Body('order') order: Order) {
+    try {
+      const orderFromDb = await this.OrderModel.create(order);
+
+      await this.UserModel.findByIdAndUpdate(order.employer_id, {
+        $push: { employer_orders: orderFromDb._id },
+      }).catch(() => null);
+
+      const botUrl = process.env.BOT_URL;
+      if (botUrl) {
+        axios
+          .post(botUrl + '/botservice/send', {
+            title: orderFromDb.title,
+            description: orderFromDb.description,
+            date: orderFromDb.date,
+            address: orderFromDb.address,
+            budget: orderFromDb.budget,
+            startTime: orderFromDb.startTime,
+            hours: orderFromDb.hours,
+            paymentType: orderFromDb.paymentType,
+            dateType: orderFromDb.dateType,
+            employerName: orderFromDb.employer_name,
+          })
+          .catch((err) =>
+            console.error('⚠️ Ошибка при рассылке:', err.message),
+          );
       }
 
       return { success: true, order: orderFromDb };
@@ -144,52 +152,52 @@ export class OrderController {
     }
   }
 
-
   @UseGuards(AuthGuard)
   @Post('create-application')
-  async createApplication(
-    @Body('application') application: Application
-  ) {
-    let applicationFromDb = await this.ApplicationModel.create(application)
-    await this.OrderModel.findByIdAndUpdate(application.order, { $push: { applications: applicationFromDb._id } })
-    await this.UserModel.findByIdAndUpdate(application.worker, { $push: { worker_applications: applicationFromDb._id } })
+  async createApplication(@Body('application') application: Application) {
+    const applicationFromDb = await this.ApplicationModel.create(application);
+    await this.OrderModel.findByIdAndUpdate(application.order, {
+      $push: { applications: applicationFromDb._id },
+    });
+    await this.UserModel.findByIdAndUpdate(application.worker, {
+      $push: { worker_applications: applicationFromDb._id },
+    });
 
-    return applicationFromDb
+    return applicationFromDb;
   }
 
   @UseGuards(AuthGuard)
   @Get('accept-application')
-  async acceptApplication(
-    @Query('application_id') application_id: string
-  ) {
-    let applicationFromDb = await this.ApplicationModel.findById(application_id)
+  async acceptApplication(@Query('application_id') application_id: string) {
+    const applicationFromDb =
+      await this.ApplicationModel.findById(application_id);
     // await this.OrderModel.findByIdAndUpdate(applicationFromDb.order, { $push: { applications: applicationFromDb._id } })
-    await this.ApplicationModel.findByIdAndUpdate(applicationFromDb._id, { status: 'одобрено' })
+    await this.ApplicationModel.findByIdAndUpdate(applicationFromDb._id, {
+      status: 'одобрено',
+    });
 
-    return applicationFromDb
+    return applicationFromDb;
   }
 
   @UseGuards(AuthGuard)
   @Get('decline-application')
-  async declineApplication(
-    @Query('application_id') application_id: string
-  ) {
-    let applicationFromDb = await this.ApplicationModel.findById(application_id)
+  async declineApplication(@Query('application_id') application_id: string) {
+    const applicationFromDb =
+      await this.ApplicationModel.findById(application_id);
     // await this.OrderModel.findByIdAndUpdate(applicationFromDb.order, { $push: { applications: applicationFromDb._id } })
-    await this.ApplicationModel.findByIdAndUpdate(applicationFromDb._id, { status: 'отказано' })
+    await this.ApplicationModel.findByIdAndUpdate(applicationFromDb._id, {
+      status: 'отказано',
+    });
 
-    return applicationFromDb
+    return applicationFromDb;
   }
 
   @UseGuards(AuthGuard)
   @Get('get-all-applications')
-  async getAllApplication(
-    @Body('userOrders') userOrders: string[]
-  ) {
+  async getAllApplication(@Body('userOrders') userOrders: string[]) {
     // let applicationFromDb = await this.ApplicationModel.findById(application_id)
     // await this.OrderModel.findByIdAndUpdate(applicationFromDb.order, { $push: { applications: applicationFromDb._id } })
     // await this.ApplicationModel.findByIdAndUpdate(applicationFromDb._id, { status: 'отказано' })
-
     // return applicationFromDb
   }
 }

@@ -1,37 +1,40 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 
-export type ApplicationDocument = HydratedDocument<ApplicationClass>
+export type ApplicationDocument = HydratedDocument<ApplicationClass>;
 
 @Schema()
 export class ApplicationClass {
   @Prop({
     type: String,
   })
-  phone: string
+  phone: string;
 
   @Prop({
     type: String,
   })
-  letter: string
+  letter: string;
 
   @Prop({
     type: String,
   })
-  initials: string
+  initials: string;
 
   @Prop({
-    type: mongoose.Schema.Types.ObjectId, ref: 'User',
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
   })
   worker: mongoose.Schema.Types.ObjectId;
 
   @Prop({
-    type: mongoose.Schema.Types.ObjectId, ref: 'Order',
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Order',
   })
   order: mongoose.Schema.Types.ObjectId;
 
   @Prop({
-    type: mongoose.Schema.Types.ObjectId, ref: 'User',
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
   })
   employer: mongoose.Schema.Types.ObjectId;
 
@@ -39,7 +42,7 @@ export class ApplicationClass {
     type: String,
     default: 'в расмотрении',
   })
-  status: string
+  status: string;
 
   @Prop({
     type: Array,
@@ -50,13 +53,12 @@ export class ApplicationClass {
   @Prop({
     type: Date,
   })
-  date: Date
+  date: Date;
 
   @Prop({
     type: String,
   })
-  rating: string
-
+  rating: string;
 }
 
-export const ApplicationSchema = SchemaFactory.createForClass(ApplicationClass)
+export const ApplicationSchema = SchemaFactory.createForClass(ApplicationClass);

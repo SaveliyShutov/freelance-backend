@@ -28,7 +28,8 @@ export class AdminGuard implements CanActivate {
     const user = await this.UserModel.findById(userData._id);
     if (!user) throw ApiError.UnauthorizedError();
 
-    if (!user.is_admin) throw ApiError.ForbiddenError('Доступ разрешён только администраторам');
+    if (!user.is_admin)
+      throw ApiError.ForbiddenError('Доступ разрешён только администраторам');
 
     request.user = user;
 

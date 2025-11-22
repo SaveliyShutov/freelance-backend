@@ -9,8 +9,8 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { TokenModule } from './token/token.module';
 import { UserModule } from './user/user.module';
-import { APP_GUARD } from '@nestjs/core'
-import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler'
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { OrderModule } from './order/order.module';
@@ -18,25 +18,25 @@ import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
-    ServeStaticModule.forRoot(
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+      serveRoot: '/static/',
+    }),
+    ThrottlerModule.forRoot([
       {
-        rootPath: join(__dirname, '..', 'public'),
-        serveRoot: '/static/',
-      }
-    ),
-    ThrottlerModule.forRoot([{
-      ttl: 1000,
-      limit: 20,
-      blockDuration: 10 * 60000
-    }]),
+        ttl: 1000,
+        limit: 20,
+        blockDuration: 10 * 60000,
+      },
+    ]),
     ConfigModule.forRoot({
       isGlobal: true,
     }),
     MongooseModule.forRoot(process.env.MONGO_URL, {
       connectionFactory: (connection) => {
-        connection.plugin(require('mongoose-autopopulate'))
-        return connection
-      }
+        connection.plugin(require('mongoose-autopopulate'));
+        return connection;
+      },
     }),
     AuthModule,
     TokenModule,
@@ -45,10 +45,12 @@ import { AdminModule } from './admin/admin.module';
     AdminModule,
   ],
   controllers: [AppController],
-  providers: [AppService,
+  providers: [
+    AppService,
     {
       provide: APP_GUARD,
-      useClass: ThrottlerGuard
-    }],
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
-export class AppModule { }
+export class AppModule {}

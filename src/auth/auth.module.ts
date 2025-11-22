@@ -8,14 +8,9 @@ import { JwtModule } from '@nestjs/jwt';
 // mongodb
 import UserModel from 'src/user/models/user.model';
 
-
 @Module({
-  imports: [
-    TokenModule,
-    JwtModule,
-    UserModel,
-  ],
+  imports: [TokenModule, JwtModule, UserModel],
   controllers: [AuthController],
-  providers: [AuthService]
+  providers: [AuthService],
 })
-export class AuthModule { }
+export class AuthModule {}
