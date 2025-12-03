@@ -124,7 +124,6 @@ export class OrderController {
       const botUrl = process.env.BOT_URL;
       if (botUrl) {
         axios.post(botUrl + '/botservice/send', {
-          orderId: orderFromDb._id,
           title: orderFromDb.title,
           description: orderFromDb.description,
           date: orderFromDb.date,
