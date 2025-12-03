@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 
-export type OrderDocument = HydratedDocument<OrderClass>
+export type OrderDocument = HydratedDocument<OrderClass>;
 
 @Schema()
 export class OrderClass {
@@ -15,17 +15,17 @@ export class OrderClass {
     type: String,
     required: true,
   })
-  title: string
+  title: string;
 
   @Prop({
     type: String,
   })
-  shortDescription: string
+  shortDescription: string;
 
   @Prop({
     type: String,
   })
-  description: string
+  description: string;
 
   @Prop({
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Application' }],
@@ -34,39 +34,40 @@ export class OrderClass {
   applications: mongoose.Schema.Types.ObjectId[];
 
   @Prop({
-    type: mongoose.Schema.Types.ObjectId, ref: 'User',
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
   })
   employer_id: mongoose.Schema.Types.ObjectId;
 
   @Prop({
     type: String,
   })
-  employer_name: string
+  employer_name: string;
 
   @Prop({
     type: Date,
   })
-  date: Date
+  date: Date;
 
   @Prop({
     type: String,
   })
-  startTime: string
+  startTime: string;
 
   @Prop({
     type: String,
   })
-  address: string
+  address: string;
 
   @Prop({
     type: String,
   })
-  budget: string
+  budget: string;
 
   @Prop({
     type: String,
   })
-  hours: string
+  hours: string;
 
   @Prop({ type: String, enum: ['hourly', 'shift', 'deal'], required: true })
   paymentType: 'hourly' | 'shift' | 'deal';
@@ -90,4 +91,4 @@ export class OrderClass {
   dateType?: 'date' | 'by agreement';
 }
 
-export const OrderSchema = SchemaFactory.createForClass(OrderClass)
+export const OrderSchema = SchemaFactory.createForClass(OrderClass);

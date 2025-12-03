@@ -6,16 +6,21 @@ import { HttpExceptionFilter } from './exceptions/http-exception.filter';
 
 import * as cookieParser from 'cookie-parser';
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule)
+  const app = await NestFactory.create(AppModule);
 
-  app.enableCors({ 
-    origin: [process.env.CLIENT_URL, process.env.ADMIN_URL, process.env.SITE_URL, process.env.BOT_URL],
-    credentials: true
-  })
-  app.useGlobalFilters(new HttpExceptionFilter())
+  app.enableCors({
+    origin: [
+      process.env.CLIENT_URL,
+      process.env.ADMIN_URL,
+      process.env.SITE_URL,
+      process.env.BOT_URL,
+    ],
+    credentials: true,
+  });
+  app.useGlobalFilters(new HttpExceptionFilter());
 
-  app.use(cookieParser())
+  app.use(cookieParser());
 
-  await app.listen(process.env.PORT)
+  await app.listen(process.env.PORT);
 }
-bootstrap()
+bootstrap();

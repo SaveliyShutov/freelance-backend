@@ -7,11 +7,10 @@ import { Connection } from 'mongoose';
 export class AppController {
   constructor(
     private readonly appService: AppService,
-    @InjectConnection() private connection: Connection
-  ) {
-  }
+    @InjectConnection() private connection: Connection,
+  ) {}
   @Get()
   getHello(): string {
-    return this.appService.getHello()
+    return this.appService.getHello();
   }
 }
