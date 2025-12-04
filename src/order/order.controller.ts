@@ -129,6 +129,7 @@ export class OrderController {
       if (botUrl) {
         axios
           .post(botUrl + '/botservice/send', {
+            orderId: orderFromDb._id,
             title: orderFromDb.title,
             description: orderFromDb.description,
             date: orderFromDb.date,
