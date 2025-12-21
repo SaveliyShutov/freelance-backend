@@ -7,6 +7,7 @@ import { UserClass } from 'src/user/schemas/user.schema';
 import { User } from 'src/user/interfaces/user.interface';
 import * as bcrypt from 'bcryptjs';
 import { UserFromClient } from 'src/user/interfaces/user-from-client.interface';
+import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class AuthService {

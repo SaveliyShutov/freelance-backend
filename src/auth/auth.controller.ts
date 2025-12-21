@@ -142,7 +142,6 @@ export class AuthController {
     // проверить, валиден ещё accessToken
     // если accessToken не валиден - сделать новый с помощью refreshToken
     const userData = await this.AuthService.refresh(refreshToken, token);
-    // console.log(JSON.stringify(userData.user.roles));
 
     res.cookie('refreshToken', refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,

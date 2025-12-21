@@ -20,12 +20,18 @@ export class AuthGuard implements CanActivate {
     const cookies = cookie.parse(request.headers.cookie || '');
     const accessToken = cookies.token;
 
-    if (!accessToken) throw ApiError.UnauthorizedError();
-    const userData = this.tokenService.validateAccessToken(accessToken);
-
-    if (userData?._id) {
-      return true;
+    if (!accessToken) {
+      throw ApiError.UnauthorizedError();
     }
-    throw ApiError.UnauthorizedError();
+
+    const userData = await this.tokenService.validateAccessToken(accessToken);
+
+    if (!userData || !userData._id) {
+      throw ApiError.UnauthorizedError();
+    }
+
+    request.user = userData;
+
+    return true;
   }
 }
