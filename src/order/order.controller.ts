@@ -153,6 +153,20 @@ export class OrderController {
     }
   }
 
+  @Post('create-from-bot-without-sending')
+  async createOrderFromBotWithoutSending(@Body('order') order: Order) {
+    try {
+      const orderFromDb = await this.OrderModel.create(order);
+      await this.UserModel.findByIdAndUpdate(order.employer_id, {
+        $push: { employer_orders: orderFromDb._id },
+      }).catch(() => null);
+      return { success: true, order: orderFromDb };
+    } catch (err) {
+      console.error('❌ Ошибка при создании ордера ботом:', err.message);
+      return { success: false, error: err.message };
+    }
+  }
+
   @UseGuards(AuthGuard)
   @Post('create-application')
   async createApplication(@Body('application') application: Application) {
