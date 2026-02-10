@@ -23,7 +23,7 @@ export class OrderController {
     private ApplicationModel: Model<ApplicationClass>,
     @InjectModel('User') private UserModel: Model<UserClass>,
     private readonly orderService: OrderService,
-  ) {}
+  ) { }
 
   @Get('get-all')
   async getAll() {
@@ -91,10 +91,12 @@ export class OrderController {
     await this.UserModel.findByIdAndUpdate(order.employer_id, {
       $push: { employer_orders: orderFromDb._id },
     });
-    const botUrl = process.env.BOT_URL + '/botservice/send';
-    if (botUrl) {
+
+    const botBase = process.env.BOT_URL;
+    if (botBase) {
       axios
-        .post(botUrl, {
+        .post(botBase + '/botservice/send', {
+          orderId: orderFromDb._id,
           title: orderFromDb.title,
           description: orderFromDb.description,
           date: orderFromDb.date,
