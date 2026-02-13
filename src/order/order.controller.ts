@@ -23,7 +23,7 @@ export class OrderController {
     private ApplicationModel: Model<ApplicationClass>,
     @InjectModel('User') private UserModel: Model<UserClass>,
     private readonly orderService: OrderService,
-  ) { }
+  ) {}
 
   @Get('get-all')
   async getAll() {
